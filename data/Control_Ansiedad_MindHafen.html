@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Ansiedad Rápido - MindHafen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f87171;
+            --dark: #0f172a;
+            --gray: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+        }
+
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .page-container {
+                margin: 0;
+                box-shadow: none;
+                width: auto;
+                min-height: auto;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 32px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .hero h1 {
+            border: none;
+            font-size: 48px;
+        }
+
+        .hero p {
+            text-align: center;
+            color: var(--gray);
+            font-size: 20px;
+        }
+
+        .workbook-box {
+            border: 2px dashed var(--gray);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="no-print"
+        style="position: fixed; top: 20px; right: 20px; background: #f87171; color: white; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; z-index: 1000;"
+        onclick="window.print()">🖨️ GUARDAR COMO PDF</div>
+    <div class="page-container">
+        <div class="hero">
+            <h1>MINDHAFEN</h1>
+            <p>Control de Ansiedad Rápido</p>
+            <div style="margin-top: 50px; color: var(--primary); font-weight: bold;">TÉCNICAS DE SUPERVIVENCIA SOMÁTICA
+            </div>
+        </div>
+        <div class="footer">© 2026 MindHafen - Salud Mental Digital</div>
+    </div>
+    <div class="page-container">
+        <h2>¿Qué es la Ansiedad realmente?</h2>
+        <p>Tu amígdala ha detectado una amenaza muerta. Tu cuerpo se prepara para una guerra que no existe. El secreto:
+            No intentes "razonar" con la amígdala. El lenguaje de la amígdala es el cuerpo.</p>
+        <h2>Protocolo Grounding 5-4-3-2-1</h2>
+        <ol>
+            <li>Mira 5 objetos.</li>
+            <li>Toca 4 texturas.</li>
+            <li>Escucha 3 sonidos.</li>
+            <li>Huele 2 cosas.</li>
+            <li>Nota 1 sabor.</li>
+        </ol>
+        <div class="workbook-box">
+            <h3>Técnica STOP</h3>
+            <p><strong>S:</strong> Stop. <strong>T:</strong> Toma aire. <strong>O:</strong> Observa. <strong>P:</strong>
+                Procede.</p>
+        </div>
+        <div class="footer">© 2026 MindHafen - Tu estás al mando</div>
+    </div>
+</body>
+
+</html>

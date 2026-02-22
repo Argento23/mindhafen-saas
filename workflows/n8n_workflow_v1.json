@@ -1,0 +1,120 @@
+{
+    "name": "MindHafen MVP Flow (Google Gemini)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "8f7cbf0e-4ac0-4660-a524-9af706728a52",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                100,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "queryAuth",
+                "sendBody": true,
+                "contentType": "json",
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "contents",
+                            "value": "={{ [ { \"parts\": [ { \"text\": \"ERES UN EXPERTO EN SALUD MENTAL (MINDHAFEN).\\n\\nCONTEXTO:\\n\" + $json[\"context\"] + \"\\n\\nUSUARIO:\\nNombre: \" + $json[\"name\"] + \"\\nEmail: \" + $json[\"email\"] + \"\\nObjetivo: \" + $json[\"goal\"] + \"\\n\\nTAREA: Escribe un correo de bienvenida empático, breve y motivador. Dale un consejo rápido basado en su objetivo y confirma que está en la lista de espera.\" } ] } ] }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "name": "Llamada a Gemini API",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                500,
+                300
+            ],
+            "credentials": {
+                "httpQueryAuth": {
+                    "id": "YOUR_GEMINI_CREDENTIAL_ID",
+                    "name": "Google Gemini Key"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "toEmail": "={{ $node[\"Webhook\"].json[\"body\"][\"email\"] }}",
+                "subject": "Bienvenido a MindHafen",
+                "text": "={{ $json[\"candidates\"][0][\"content\"][\"parts\"][0][\"text\"] }}",
+                "html": "={{ $json[\"candidates\"][0][\"content\"][\"parts\"][0][\"text\"].replace(/\\n/g, '<br>') }}"
+            },
+            "name": "Enviar Email",
+            "type": "n8n-nodes-base.emailSend",
+            "typeVersion": 1,
+            "position": [
+                900,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "context",
+                            "value": "Aquí debes pegar el contenido del archivo content_repository.json para que Gemini tenga conocimiento."
+                        }
+                    ]
+                }
+            },
+            "name": "Contexto",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 1,
+            "position": [
+                300,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Contexto",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Contexto": {
+            "main": [
+                [
+                    {
+                        "node": "Llamada a Gemini API",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Llamada a Gemini API": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

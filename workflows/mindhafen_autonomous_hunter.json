@@ -1,0 +1,572 @@
+{
+    "name": "MindHafen - Autonomous Lead Generation (Mental Health)",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "triggerAtHour": 10
+                        }
+                    ]
+                }
+            },
+            "id": "schedule",
+            "name": "Cron Diario (10am)",
+            "type": "n8n-nodes-base.cron",
+            "typeVersion": 1,
+            "position": [
+                240,
+                400
+            ]
+        },
+        {
+            "parameters": {},
+            "id": "start",
+            "name": "Manual Trigger",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                240,
+                600
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "// --- GLOBAL CONFIGURATION (MINDHAFEN) ---\n\n// 1. Nichos (Salud Mental & Bienestar)\nconst niches = [\n  \"Psicólogos\", \n  \"Terapeutas Holísticos\", \n  \"Centros de Yoga\", \n  \"Clínicas de Estrés\", \n  \"Coach de Vida\", \n  \"Retiros Espirituales\",\n  \"Psiquiatras\",\n  \"Centros de Meditación\"\n];\n\n// 2. Ubicaciones (SIN ARGENTINA)\nconst locations = [\n  \"Ciudad de México, México\",\n  \"Monterrey, México\",\n  \"Guadalajara, México\",\n  \"Bogotá, Colombia\",\n  \"Medellín, Colombia\",\n  \"Santiago, Chile\",\n  \"Lima, Perú\",\n  \"Madrid, España\",\n  \"Barcelona, España\",\n  \"Valencia, España\",\n  \"Miami, FL, USA\"\n];\n\n// 3. Selección Random\nconst niche = niches[Math.floor(Math.random() * niches.length)];\nconst location = locations[Math.floor(Math.random() * locations.length)];\n\nreturn {\n  search_term: niche,\n  location: location,\n  // Banner MindHafen (sube tu banner a assets/images/mindhafen_banner.jpg y hostealo)\n  banner_url: \"https://images.unsplash.com/photo-1544367563-12123d895951?q=80&w=800&auto=format&fit=crop\"\n};"
+            },
+            "id": "config",
+            "name": "CONFIG GLOBAL",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                460,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://serpapi.com/search.json",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "queryAuth",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "api_key",
+                            "value": "9be0d43581dc9220232e9a2819f308c303a32082a1e62f97c9c87b75dfde8d72"
+                        },
+                        {
+                            "name": "engine",
+                            "value": "google_maps"
+                        },
+                        {
+                            "name": "q",
+                            "value": "={{ $json.search_term + ' en ' + $json.location }}"
+                        },
+                        {
+                            "name": "num",
+                            "value": "10"
+                        }
+                    ]
+                }
+            },
+            "id": "serp",
+            "name": "Google Maps",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                680,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "fieldToSplitOut": "local_results"
+            },
+            "id": "split",
+            "name": "Dividir",
+            "type": "n8n-nodes-base.itemLists",
+            "typeVersion": 3,
+            "position": [
+                900,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "sheetId": {
+                    "__rl": true,
+                    "value": "1gKy... (Pegar ID de tu Hoja Aqui)",
+                    "mode": "id"
+                },
+                "range": "Hoja 1!A:F",
+                "options": {
+                    "valueRenderOption": "FORMATTED_VALUE"
+                }
+            },
+            "id": "read_existing",
+            "name": "Leer Leads Existentes",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                950,
+                200
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "zwdmBzveCXv4B3Ec",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "// Obtener links ya guardados (con manejo de errores)\nlet existingRaw = [];\ntry {\n    const sheetData = $('Leer Leads Existentes').all();\n    if (sheetData && sheetData.length > 0) {\n        existingRaw = sheetData.map(x => x.json);\n    }\n} catch(e) {\n    // Si falla (primera ejecución o sheet vacío), continuar sin duplicados\n    existingRaw = [];\n}\n\n// Extraer dominios simples de la hoja para comparar\nconst existingDomains = existingRaw.map(x => {\n    const url = x.Website || x.Web || x.Link || '';\n    try { \n        if (url) return new URL(url).hostname.replace('www.', ''); \n    } catch(e) { \n        return url; \n    }\n    return '';\n}).filter(d => d); // Filtrar vacíos\n\n// Item actual viene de 'Dividir' con campo 'website'\nconst currentUrl = $input.item.json.website || '';\nlet currentDomain = '';\ntry {\n    if (currentUrl) currentDomain = new URL(currentUrl).hostname.replace('www.', '');\n} catch(e) { \n    currentDomain = currentUrl; \n}\n\n// Filtrar si ya existe\nif (currentDomain && existingDomains.length > 0 && existingDomains.some(d => d && d.includes(currentDomain))) {\n    return []; // Descartar duplicado\n}\n\nreturn $input.item;"
+            },
+            "id": "dedup",
+            "name": "Filtrar Duplicados",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1000,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "batchSize": 1
+            },
+            "id": "loop",
+            "name": "Loop",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ $json.website }}",
+                "options": {
+                    "timeout": 5000
+                }
+            },
+            "id": "web",
+            "name": "Visitar Web",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                1340,
+                400
+            ],
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "jsCode": "const html = $input.item.json.data || '';\nconst emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9_-]+)/gi;\nconst mailtoRegex = /mailto:([^\\?\"'>]+)/gi;\nlet foundEmails = [];\nlet match;\nwhile ((match = mailtoRegex.exec(html)) !== null) {\n    if (match[1]) foundEmails.push(match[1]);\n}\nconst textMatches = html.match(emailRegex) || [];\nfoundEmails = [...foundEmails, ...textMatches];\nconst uniqueEmails = [...new Set(foundEmails.map(e => e.trim().toLowerCase()))];\nconst validEmails = uniqueEmails.filter(e => !e.match(/\\.(png|jpg|jpeg|gif|css|js|svg)$/i) && e.length < 100 && e.includes('@'));\nconst bestEmail = validEmails.length > 0 ? validEmails[0] : '';\nconst allEmails = validEmails.join(', ');\nconst text = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '').replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '').replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ');\nconst title = $('Loop').item.json.title || 'Sin nombre';\nconst phone = $('Loop').item.json.phone || '';\nreturn {\n  text: text.substring(0, 5000),\n  title: title,\n  phone_from_maps: phone,\n  regex_email: bestEmail,\n  all_emails: allEmails\n};"
+            },
+            "id": "clean",
+            "name": "Limpiar HTML",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1560,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "model": "meta-llama/llama-3.3-70b-versatile"
+            },
+            "id": "groq",
+            "name": "Groq Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                1780,
+                620
+            ],
+            "credentials": {
+                "groqApi": {
+                    "id": "t7iYzRwAE19Qfzou",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=CONTEXTO:\nEres el Equipo de **MindHafen** (Especialistas en Marketing para Salud Mental).\nTienes un recurso valioso: la \"Guía de Descompresión Neuronal\" para pacientes con ansiedad.\n\nNEGOCIO:\nWeb: {{ $json.text }}\nNombre: {{ $json.title }}\nTel Maps: {{ $json.phone_from_maps }}\nEmail SUGERIDO (encontrado en código): {{ $json.regex_email }} (Verificar si es válido).\nUbicación: {{ $('CONFIG GLOBAL').item.json.location }}\n\nTAREA:\n1. DETECTA AUTOMATIZACIÓN EXISTENTE:\n   - Busca señales: 'chatbot', 'respuesta automática', 'WhatsApp Business API', 'reserva online', 'turnos online', 'calendario automatizado'\n   - Si TIENE automatización → score: 0-2 (descartarlo)\n\n2. EXTRAE Y NORMALIZA DATOS:\n   - Email: BUSCA EN TODO EL TEXTO. Si NO encuentras, usa el 'Email SUGERIDO'. Si no hay nada, devuelve \"\" (vacío).\n   - Teléfono: OBLIGATORIO FORMATO INTERNACIONAL E.164 SIN '+'.\n     * Prioridad: Extraer del texto. Si no hay, USAR 'Tel Maps'.\n     * REGLAS POR PAÍS:\n       - **ARGENTINA**:\n          * CELULAR (Móvil): Usa prefix '549' + Área (sin 0) + Num (sin 15). Ej: 5493764555555\n          * FIJO (Landline): Usa prefix '54' + Área (sin 0) + Num. Ej: 543764422998\n       - **RESTO DEL MUNDO**: Código País + Área + Número.\n\n3. IDENTIFICA industria\n\n4. GENERA WA TEXTO (Corto, empático, 'Equipo MindHafen', menciona brevemente que tienes una herramienta útil para sus pacientes).\n\n5. GENERA EMAIL BODY (HTML <p> y <ul>):\n   - NO VENDAS directamante. OFRECE VALOR.\n   - Menciona que has creado una **Guía de Descompresión Neuronal** que podría ser muy útil para sus pacientes.\n   - Invítalos a descargarla gratuitamente (el link estará en el botón del email).\n\nIMPORTANTISIMO:\n- RESPONDE ÚNICAMENTE CON EL OBJETO JSON.\n- NO INCLUYAS TEXTO ANTES NI DESPUES DEL JSON. SOLO EL JSON.\n- NO MARKDOWN.\n\nJSON:\n{\n  \"phone\": \"5493764555555\",\n  \"email\": \"contacto@empresa.com\",\n  \"score\": 8,\n  \"wa_msg\": \"Hola... tenemos una herramienta para tus pacientes...\",\n  \"email_body\": \"<p>Hola equipo...</p><p>Sabemos lo difícil que es gestionar pacientes con ansiedad...</p>\"\n}",
+                "hasOutputParser": true
+            },
+            "id": "ai",
+            "name": "IA Extractor PRO",
+            "type": "@n8n/n8n-nodes-langchain.chainLlm",
+            "typeVersion": 1.4,
+            "position": [
+                1780,
+                400
+            ],
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "jsCode": "let data = $input.item.json;\n\n// --- INTENTO DE RECUPERAR JSON SI LA IA ALUCINÓ ---\nif (!data.email && !data.phone) {\n    const possibleString = data.text || data.output || data.response || '';\n    if (typeof possibleString === 'string') {\n        try {\n            // Buscar el último bloque JSON completo si hay texto basura antes\n            const first = possibleString.indexOf('{');\n            const last = possibleString.lastIndexOf('}');\n            if (first >= 0 && last > first) {\n                const jsonStr = possibleString.substring(first, last + 1);\n                const parsed = JSON.parse(jsonStr);\n                data = { ...data, ...parsed };\n            }\n        } catch (e) { \n             // Fallback regex simple\n             try {\n                 const match = possibleString.match(/\\{[\\s\\S]*\\}/);\n                 if (match) {\n                     const parsed = JSON.parse(match[0]);\n                     data = { ...data, ...parsed };\n                 }\n             } catch(e2) {}\n        }\n    }\n}\n\nconst title = $('Loop').item.json.title || 'Sin nombre';\nconst phone_maps = $('Loop').item.json.phone || '';\nconst banner = $('CONFIG GLOBAL').item.json.banner_url;\nconst regex_email_input = $('Limpiar HTML').item.json.regex_email;\n\n// Datos con fallback (SIN NUMERO DUMMY)\nconst rawPhone = data.phone || phone_maps || '';\nconst phone = rawPhone.replace(/[+\\s-]/g, '');\n\n// PRIORITY: AI Email > Regex Email > Fallback\nlet email = (data.email && data.email.trim() !== '' && data.email !== '\"\"') ? data.email : regex_email_input;\nif (!email || email === '' || email === '\"\"' || email === 'SIN-EMAIL@nodetectado.local') email = 'SIN-EMAIL@nodetectado.local';\n\nconst score = data.score || 5;\n\n// MindHafen Asset URL\nconst guideUrl = 'https://mindhafen.generarise.space/guia-descompresion.html';\n\n// Contenido del email (viene de IA o fallback)\nconst emailBody = data.email_body || '<p>Hola equipo de <strong>' + title + '</strong>,</p><p>En MindHafen hemos desarrollado una herramienta para ayudar a pacientes con ansiedad mediante técnicas de descompresión neuronal.</p><p>Nos encantaría compartirla con ustedes.</p>';\n\n// Template HTML MindHafen\nconst email_html_mindhafen = '<!DOCTYPE html>' +\n'<html lang=\"es\">' +\n'<head>' +\n'    <meta charset=\"UTF-8\">' +\n'    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">' +\n'    <title>MindHafen - Recursos para Profesionales</title>' +\n'</head>' +\n'<body style=\"margin: 0; padding: 0; font-family: \\'Segoe UI\\', Arial, sans-serif; background-color: #f4f4f7; color: #333;\">' +\n'    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #f4f4f7; padding: 40px 20px;\">' +\n'        <tr>' +\n'            <td align=\"center\">' +\n'                <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #f0f0f0;\">' +\n'                    <tr>' +\n'                        <td style=\"background-image: url(\\'' + banner + '\\'); background-size: cover; background-position: center; height: 180px; position: relative;\">' +\n'                            <div style=\"position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, rgba(100,50,150,0.3) 0%, rgba(50,30,100,0.7) 100%);\"></div>' +\n'                            <div style=\"position: absolute; bottom: 20px; left: 30px; color: #ffffff; font-size: 28px; font-weight: bold; text-shadow: 0 0 15px rgba(0,0,0,0.9), 0 0 25px rgba(100,50,150,0.8), 2px 2px 6px rgba(0,0,0,1); letter-spacing: 1.5px;\">' +\n'                                MINDHAFEN' +\n'                            </div>' +\n'                        </td>' +\n'                    </tr>' +\n'                    <tr>' +\n'                        <td style=\"padding: 40px 30px; color: #1a202c; line-height: 1.6; font-size: 16px; background-color: #ffffff;\">' +\n                            emailBody +\n'                            <div style=\"text-align: center; margin-top: 30px;\">' +\n'                                <a href=\"' + guideUrl + '\" style=\"display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 50px; font-weight: 600; margin-top: 20px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);\">' +\n'                                    DESCARGAR GUÍA GRATUITA' +\n'                                </a>' +\n'                            </div>' +\n'                        </td>' +\n'                    </tr>' +\n'                    <tr>' +\n'                        <td style=\"background-color: #f9fafb; padding: 20px; text-align: center; border-top: 1px solid #eee; font-size: 12px; color: #888;\">' +\n'                            <p style=\"margin-bottom: 5px;\"><strong>MindHafen - Recursos Clínicos</strong></p>' +\n'                            <p style=\"margin: 0;\">Neurociencia Aplicada • <a href=\"https://mindhafen.generarise.space/dashboard.html\" style=\"color:#667eea; text-decoration:none;\">Plataforma Profesional</a></p>' +\n'                        </td>' +\n'                    </tr>' +\n'                </table>' +\n'            </td>' +\n'        </tr>' +\n'    </table>' +\n'</body>' +\n'</html>';\n\n// Clean WA\nlet waMsg = data.wa_msg || 'Hola equipo de ' + title + ', somos MindHafen. Tenemos un recurso gratuito para manejo de ansiedad en pacientes. ¿Les gustaría recibirlo?';\nwaMsg = waMsg.replace(/^(Mensaje|Message|WA|WhatsApp)(:|\\s)+/i, '').replace(/^[\\\"']|[\\\"']$/g, '').trim();\n\nreturn {\n  text: title,\n  score: score,\n  email_address: email,\n  phone: phone,\n  wa_msg: waMsg,\n  email_html: email_html_mindhafen,\n  search_term: $('CONFIG GLOBAL').item.json.search_term,\n  location: $('CONFIG GLOBAL').item.json.location,\n  raw_ai: JSON.stringify(data)\n};"
+            },
+            "id": "parse",
+            "name": "Diseñador Email Premium",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2000,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "resource": "messages-api",
+                "instanceName": "LATAM",
+                "options_message": {
+                    "number": "={{ $json.phone }}",
+                    "textMessage": {
+                        "text": "={{ $json.wa_msg }}"
+                    }
+                },
+                "options": {
+                    "timeout": 15000
+                }
+            },
+            "id": "evo",
+            "name": "Enviar WhatsApp (Texto)",
+            "type": "n8n-nodes-evolution-api.evolutionApi",
+            "typeVersion": 1,
+            "position": [
+                2220,
+                400
+            ],
+            "credentials": {
+                "evolutionApi": {
+                    "id": "bzWosesjRnlSmCBY",
+                    "name": "LATAM"
+                }
+            },
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "senderEmail": "contacto@generarise.space",
+                "toEmail": "={{ $json.email_address }}",
+                "subject": "Propuesta de Automatización - GenerArise",
+                "htmlContent": "={{ $json.email_html }}"
+            },
+            "id": "brevo",
+            "name": "Enviar Email",
+            "type": "n8n-nodes-base.sendInBlue",
+            "typeVersion": 2,
+            "position": [
+                2440,
+                400
+            ],
+            "credentials": {
+                "sendInBlueApi": {
+                    "id": "dRbziQm4hHXAh3GR",
+                    "name": "Brevo account"
+                }
+            },
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "text",
+                            "value": "={{ $('Diseñador Email Premium').item.json.text }}"
+                        },
+                        {
+                            "name": "score",
+                            "value": "={{ $('Diseñador Email Premium').item.json.score }}"
+                        },
+                        {
+                            "name": "email_address",
+                            "value": "={{ $('Diseñador Email Premium').item.json.email_address }}"
+                        },
+                        {
+                            "name": "search_term",
+                            "value": "={{ $('Diseñador Email Premium').item.json.search_term }}"
+                        },
+                        {
+                            "name": "location",
+                            "value": "={{ $('Diseñador Email Premium').item.json.location }}"
+                        },
+                        {
+                            "name": "raw",
+                            "value": "={{ $('Diseñador Email Premium').item.json.raw_ai }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "prepare_data",
+            "name": "Datos Finales",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [
+                2660,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1HSNrK1Zmk2WqU14QZgxpFmvShdPSRWA41GxRPQ956Eo",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Hoja 1",
+                    "mode": "list"
+                },
+                "columns": {
+                    "mappingMode": "autoMapInputData",
+                    "value": {}
+                }
+            },
+            "id": "sheet",
+            "name": "Guardar en Sheet",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                2880,
+                400
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "zwdmBzveCXv4B3Ec",
+                    "name": "Google Sheets account"
+                }
+            },
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "amount": 120,
+                "unit": "seconds"
+            },
+            "id": "wait",
+            "name": "Esperar (2 min)",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                3100,
+                400
+            ]
+        }
+    ],
+    "connections": {
+        "Cron Diario (10am)": {
+            "main": [
+                [
+                    {
+                        "node": "CONFIG",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Manual Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "CONFIG",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "CONFIG": {
+            "main": [
+                [
+                    {
+                        "node": "Google Maps",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Maps": {
+            "main": [
+                [
+                    {
+                        "node": "Dividir",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Dividir": {
+            "main": [
+                [
+                    {
+                        "node": "Leer Leads Existentes",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Leer Leads Existentes": {
+            "main": [
+                [
+                    {
+                        "node": "Filtrar Duplicados",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filtrar Duplicados": {
+            "main": [
+                [
+                    {
+                        "node": "Loop",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop": {
+            "main": [
+                [
+                    {
+                        "node": "Visitar Web",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Visitar Web": {
+            "main": [
+                [
+                    {
+                        "node": "Limpiar HTML",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Limpiar HTML": {
+            "main": [
+                [
+                    {
+                        "node": "IA Extractor PRO",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "IA Extractor PRO",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IA Extractor PRO": {
+            "main": [
+                [
+                    {
+                        "node": "Diseñador Email Premium",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Diseñador Email Premium": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar WhatsApp (Texto)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar WhatsApp (Texto)": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar Email": {
+            "main": [
+                [
+                    {
+                        "node": "Datos Finales",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Datos Finales": {
+            "main": [
+                [
+                    {
+                        "node": "Guardar en Sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Guardar en Sheet": {
+            "main": [
+                [
+                    {
+                        "node": "Esperar (2 min)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Esperar (2 min)": {
+            "main": [
+                [
+                    {
+                        "node": "Loop",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "versionId": "generarise-autonomous-v33-fixed"
+}

@@ -1,0 +1,81 @@
+{
+    "name": "MindHafen - Webhook MÍNIMO (Sin credenciales)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "8f7cbf0e-4ac0-4660-a524-9af706728a52",
+                "options": {}
+            },
+            "id": "webhook-node",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "8f7cbf0e-4ac0-4660-a524-9af706728a52"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Recibir datos del formulario\nconst formData = $input.all()[0].json.body;\n\n// Log para debugging\nconsole.log('📧 Nuevo registro MindHafen:', formData);\n\n// Devolver respuesta exitosa\nreturn {\n  json: {\n    success: true,\n    message: 'Gracias por registrarte. Revisa tu email.',\n    data: {\n      name: formData.name,\n      email: formData.email,\n      goal: formData.goal,\n      timestamp: new Date().toISOString()\n    }\n  }\n};"
+            },
+            "id": "code-node",
+            "name": "Procesar Datos",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                460,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json }}"
+            },
+            "id": "respond-webhook",
+            "name": "Responder al Navegador",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                680,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Procesar Datos",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Procesar Datos": {
+            "main": [
+                [
+                    {
+                        "node": "Responder al Navegador",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-24T00:00:00.000Z",
+    "versionId": "minimal-v1"
+}

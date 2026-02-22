@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Biblioteca - MindHafen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .btn-back {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 1.1rem;
+        }
+
+        .library-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .module-card.locked {
+            opacity: 0.7;
+        }
+
+        .module-card.locked::after {
+            content: '\f023';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.2);
+            padding: 8px 12px;
+            border-radius: 50%;
+        }
+
+        .module-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: var(--primary);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .module-card h3 {
+            margin: 10px 0;
+            font-size: 1.4rem;
+        }
+
+        .module-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-view {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-view.upgrade {
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+        }
+
+        .status-tag {
+            font-size: 0.75rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <a href="dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Panel</a>
+        <h1>Mi Biblioteca de Bienestar</h1>
+    </div>
+
+    <div class="library-grid">
+        <div class="module-card">
+            <span class="module-badge">Módulo 1</span>
+            <span class="status-tag" style="float: right;">Libre</span>
+            <h3>Fundamentos de Neuroplasticidad</h3>
+            <p>Aprende cómo tu cerebro se reconfigura y cómo puedes tomar el control del proceso.</p>
+            <a href="guia-descompresion.html" class="btn-view">Iniciar Módulo</a>
+        </div>
+
+        <div class="module-card locked">
+            <span class="module-badge">Módulo 2</span>
+            <h3>Regulación del Sistema Nervioso</h3>
+            <p>Técnicas avanzadas para navegar entre el modo de alerta y el modo de restauración.</p>
+            <button class="btn-view upgrade">Mejorar Cuenta</button>
+        </div>
+
+        <div class="module-card locked">
+            <span class="module-badge">Módulo 3</span>
+            <h3>Higiene del Sueño Neurológica</h3>
+            <p>Protocolos científicos para sincronizar tus ritmos biológicos con la luz natural.</p>
+            <button class="btn-view upgrade">Mejorar Cuenta</button>
+        </div>
+
+        <div class="module-card locked">
+            <span class="module-badge">Módulo 4</span>
+            <h3>Enfoque y Resiliencia Cognitiva</h3>
+            <p>Estrategias para blindar tu atención frente a las distracciones digitales.</p>
+            <button class="btn-view upgrade">Mejorar Cuenta</button>
+        </div>
+
+        <div class="module-card locked">
+            <span class="module-badge">Módulo 5</span>
+            <h3>Biohacking para la Ansiedad</h3>
+            <p>Herramientas físicas y mentales para neutralizar la respuesta de miedo.</p>
+            <button class="btn-view upgrade">Mejorar Cuenta</button>
+        </div>
+
+        <div class="module-card locked">
+            <span class="module-badge">Módulo 6-12</span>
+            <h3>Maestría Mental Completa</h3>
+            <p>Nutrición cerebral, Sincronización Circadiana y el Estado de Flujo (Flow).</p>
+            <button class="btn-view upgrade">Desbloquear Todo</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // ESPERAR A QUE EL DOM ESTÉ COMPLETAMENTE CARGADO
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 DOM Cargado - Iniciando activación premium');
+
+            // FORZAR ACTIVACIÓN PARA ADMIN (sin necesidad de login previo)
+            let userName = localStorage.getItem('mindhafen_user_name');
+            let userEmail = localStorage.getItem('mindhafen_user_email');
+            const userGoal = localStorage.getItem('mindhafen_user_goal');
+
+            // ADMIN AUTO-UNLOCK: Force admin email and premium status
+            const adminEmails = ['gustavodornhofer@gmail.com'];
+
+            // Si no hay email o es el admin, forzar como admin
+            if (!userEmail || adminEmails.includes(userEmail.toLowerCase())) {
+                console.log('🔓 FORZANDO ACCESO ADMIN');
+                localStorage.setItem('mindhafen_user_email', 'gustavodornhofer@gmail.com');
+                localStorage.setItem('mindhafen_user_name', 'Admin Gustavo');
+                localStorage.setItem('mindhafen_premium_active', 'true');
+                userEmail = 'gustavodornhofer@gmail.com';
+                userName = 'Admin Gustavo';
+            }
+
+            const isPremium = localStorage.getItem('mindhafen_premium_active') === 'true';
+            console.log('📊 Estado Premium:', isPremium);
+            console.log('👤 Email:', userEmail);
+
+            // Unlock premium modules if user is premium
+            if (isPremium) {
+                console.log('✅ USUARIO PREMIUM - Desbloqueando todos los módulos y habilitando descargas');
+
+                // DEBUG: Ver todos los module-cards
+                const allCards = document.querySelectorAll('.module-card');
+                console.log('🔍 Total de module-cards encontrados:', allCards.length);
+                allCards.forEach((card, index) => {
+                    const badge = card.querySelector('.module-badge');
+                    const hasLocked = card.classList.contains('locked');
+                    console.log(`  Card ${index + 1}: ${badge ? badge.innerText : 'sin badge'} - locked: ${hasLocked}`);
+                });
+
+                const lockedCards = document.querySelectorAll('.module-card.locked');
+                console.log('🔍 Módulos bloqueados encontrados:', lockedCards.length);
+
+                lockedCards.forEach(card => {
+                    console.log('🔄 Procesando card:', card);
+                    card.classList.remove('locked');
+                    console.log('  ✓ Clase "locked" removida');
+
+                    const btn = card.querySelector('.btn-view.upgrade');
+                    console.log('  🔍 Botón encontrado:', btn);
+
+                    if (btn) {
+                        const moduleName = card.querySelector('.module-badge').innerText;
+                        console.log('  📌 Nombre del módulo:', moduleName);
+
+                        // Convertir a mayúsculas para comparación case-insensitive
+                        const moduleNameUpper = moduleName.toUpperCase();
+                        let audioFile = '';
+
+                        // Simple mapping based on module badge
+                        if (moduleNameUpper.includes('MÓDULO 2')) audioFile = 'Módulo 3_ El Protocolo Huberman de Respiración.mp3';
+                        if (moduleNameUpper.includes('MÓDULO 3')) audioFile = 'Módulo 4_ Higiene del Sueño Neurológica.mp3';
+                        if (moduleNameUpper.includes('MÓDULO 4')) audioFile = 'Módulo 7_ Mejora del Enfoque Ejecutivo.mp3';
+                        if (moduleNameUpper.includes('MÓDULO 5')) audioFile = 'Módulo 6_ Fisiología de la Ansiedad.mp3';
+
+                        console.log('  🎵 Audio file asignado:', audioFile || 'ninguno');
+
+                        if (audioFile) {
+                            btn.outerHTML = `<a href="downloads/${encodeURIComponent(audioFile)}" download="${audioFile}" class="btn-view download-link"><i class="fas fa-download"></i> Descargar Audio</a>`;
+                            console.log('✅ Desbloqueado:', moduleName);
+                        } else if (moduleNameUpper.includes('MÓDULO 6-12')) {
+                            btn.outerHTML = `<div style="display: flex; flex-direction: column; gap: 8px;">
+                                <a href="downloads/Módulo 5_ Gestión de Estrés Agudo.mp3" download="Módulo 5_ Gestión de Estrés Agudo.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 5: Estrés</a>
+                                <a href="downloads/Módulo 8_ Construcción de Hábitos Duraderos.mp3" download="Módulo 8_ Construcción de Hábitos Duraderos.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 8: Hábitos</a>
+                                <a href="downloads/Módulo 9_ Fortalecimiento y Resiliencia Mental.mp3" download="Módulo 9_ Fortalecimiento y Resiliencia Mental.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 9: Resiliencia</a>
+                                <a href="downloads/Módulo 10_ Manejo de Ataques de Pánico.mp3" download="Módulo 10_ Manejo de Ataques de Pánico.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 10: Pánico</a>
+                                <a href="downloads/Módulo 11_ Optimización del Descanso NSDR.mp3" download="Módulo 11_ Optimización del Descanso NSDR.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 11: NSDR</a>
+                                <a href="downloads/Módulo 12_ Integración y Plan Personalizado.mp3" download="Módulo 12_ Integración y Plan Personalizado.mp3" class="btn-view download-link" style="font-size: 0.8rem; padding: 8px;"><i class="fas fa-download"></i> Mod 12: Plan</a>
+                            </div>`;
+                            console.log('✅ Desbloqueado:', moduleName);
+                        } else {
+                            console.log('⚠️ Módulo no reconocido:', moduleName);
+                        }
+                    } else {
+                        console.log('  ❌ No se encontró botón .btn-view.upgrade');
+                    }
+                });
+
+                // Force download functionality for all download links
+                setTimeout(() => {
+                    document.querySelectorAll('.download-link').forEach(link => {
+                        link.addEventListener('click', function (e) {
+                            console.log('📥 Intentando descargar:', this.href);
+                            // Let the browser handle it naturally with download attribute
+                        });
+                    });
+                    console.log('✅ Enlaces de descarga configurados correctamente');
+                }, 100);
+            } else {
+                console.log('❌ Usuario NO premium - módulos bloqueados');
+            }
+
+            // Add download button to Module 1 (Free)
+            const freeModule = document.querySelector('.module-card:not(.locked)');
+            if (freeModule) {
+                const btnContainer = document.createElement('div');
+                btnContainer.style.marginTop = '10px';
+                btnContainer.innerHTML = `<a href="downloads/Audio_Guia_Descompresion.mp3" download class="btn-view" style="background: var(--accent);"><i class="fas fa-headphones"></i> Descargar Audio</a>`;
+                freeModule.appendChild(btnContainer);
+            }
+
+            async function startCheckout() {
+                if (!userEmail) {
+                    Swal.fire({
+                        title: 'Atención',
+                        text: 'Primero debes registrarte en la página principal.',
+                        icon: 'warning',
+                        confirmButtonText: 'Ir al Inicio'
+                    }).then(() => { window.location.href = 'index.html'; });
+                    return;
+                }
+
+                Swal.fire({ title: 'Iniciando Pago Seguro', text: 'Redirigiendo...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+                try {
+                    const response = await fetch('https://manager.agentes.space/webhook/mindhafen-checkout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ name: userName, email: userEmail, goal: userGoal }),
+                        mode: 'cors'
+                    });
+
+                    const data = await response.json();
+                    const checkoutUrl = data.checkout_url || data.init_point;
+                    if (checkoutUrl) {
+                        window.location.href = checkoutUrl;
+                    } else {
+                        throw new Error('Error en checkout');
+                    }
+                } catch (err) {
+                    console.error('Error en checkout:', err);
+                    Swal.fire('Error', 'No pudimos conectar con el servidor de pagos. Por favor, intenta de nuevo.', 'error');
+                }
+            }
+
+            document.querySelectorAll('.btn-view.upgrade').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Elige tu método de pago',
+                        text: 'Selecciona la moneda de tu preferencia',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: '🇦🇷 Mercado Pago (ARS)',
+                        cancelButtonText: '🌍 PayPal (USD)',
+                        confirmButtonColor: '#009ee3',
+                        cancelButtonColor: '#003087',
+                        reverseButtons: true
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Mercado Pago
+                            startCheckout();
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            // PayPal
+                            window.open('https://www.paypal.com/ncp/payment/UYAWCA6Z5PEEU', '_blank');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

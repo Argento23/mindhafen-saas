@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Protocolo de Sueño Profundo - MindHafen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10b981;
+            --dark: #0f172a;
+            --gray: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+        }
+
+        .page-container {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .page-container {
+                margin: 0;
+                box-shadow: none;
+                width: auto;
+                min-height: auto;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 32px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .hero h1 {
+            border: none;
+            font-size: 48px;
+        }
+
+        .hero p {
+            text-align: center;
+            color: var(--gray);
+            font-size: 20px;
+        }
+
+        .scientific-note {
+            background: rgba(16, 185, 129, 0.05);
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="no-print"
+        style="position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; z-index: 1000;"
+        onclick="window.print()">🖨️ GUARDAR COMO PDF</div>
+    <div class="page-container">
+        <div class="hero">
+            <h1>MINDHAFEN</h1>
+            <p>Protocolo de Sueño Profundo</p>
+            <div style="margin-top: 50px; color: var(--primary); font-weight: bold;">OPTIMIZACIÓN CIRCADIANA</div>
+        </div>
+        <div class="footer">© 2026 MindHafen - Salud Mental Digital</div>
+    </div>
+    <div class="page-container">
+        <h2>Tu Cerebro se Lava mientras Duermes</h2>
+        <p>Durante el sueño, el sistema glinfático elimina toxinas metabólicas (placas beta-amiloides). Sin este
+            proceso, la niebla cognitiva se vuelve crónica.</p>
+        <h2>El Reloj Maestro</h2>
+        <p>La proteína Melanopsina en tus ojos le dice al cerebro qué hora es. Para dormir bien a las 11 PM, debes ganar
+            la batalla a las 8 AM con luz solar directa.</p>
+        <div class="scientific-note">
+            <h3>Técnica 4-7-8</h3>
+            <p>Inhala en 4s, mantén 7s, exhala en 8s. Repite 4 veces para inducir sedación natural.</p>
+        </div>
+        <div class="footer">© 2026 MindHafen - Higiene Neurológica</div>
+    </div>
+</body>
+
+</html>

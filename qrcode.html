@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code - MindHafen</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        #qrcode {
+            margin: 20px 0;
+        }
+
+        h2 {
+            color: #333;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: #666;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h2>Escanea para Acceder</h2>
+        <p>MindHafen & Guías Gratuitas</p>
+        <div id="qrcode"></div>
+        <div style="color: #666; font-size: 0.8rem; font-weight: bold;">mindhafen.agentes.space</div>
+    </div>
+
+    <script>
+        // Generates the QR code pointing to the Links page
+        new QRCode(document.getElementById("qrcode"), {
+            text: "https://mindhafen.agentes.space/links.html",
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    </script>
+</body>
+
+</html>

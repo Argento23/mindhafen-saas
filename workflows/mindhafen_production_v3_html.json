@@ -1,0 +1,232 @@
+{
+    "name": "MindHafen - Lead Capture & AI Response (PRODUCTION)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "8f7cbf0e-4ac0-4660-a524-9af706728a52",
+                "options": {}
+            },
+            "id": "webhook-node",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "8f7cbf0e-4ac0-4660-a524-9af706728a52"
+        },
+        {
+            "parameters": {
+                "model": "llama-3.3-70b-versatile",
+                "options": {
+                    "temperature": 0.7,
+                    "maxTokens": 500
+                }
+            },
+            "id": "groq-model",
+            "name": "Groq Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                660,
+                180
+            ],
+            "credentials": {
+                "groqApi": {
+                    "id": "YOUR_GROQ_CREDENTIAL_ID",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=Usuario registrado:\n- Nombre: {{ $('Webhook').item.json.body.name }}\n- Email: {{ $('Webhook').item.json.body.email }}\n- Objetivo: {{ $('Webhook').item.json.body.goal }}\n\nGenera un email personalizado de bienvenida.",
+                "options": {
+                    "systemMessage": "Eres el Asistente de Bienestar de MindHafen, un sistema de salud mental digital basado en neurociencia.\n\n## TU MISI\u00d3N:\nEscribir un email de bienvenida personalizado, emp\u00e1tico y motivador para un nuevo usuario que acaba de registrarse en nuestra lista de espera.\n\n## FORMATO DEL EMAIL (ESTRICTO):\nDevuelve SOLO el contenido del email en texto plano. NO incluyas:\n- Asunto (lo generamos aparte)\n- Firma (la agregamos despu\u00e9s)\n- Formato HTML\n- JSON\n\n## ESTRUCTURA:\n1. **Saludo personalizado** usando el nombre del usuario\n2. **Reconocimiento emp\u00e1tico** de su objetivo espec\u00edfico (estr\u00e9s/enfoque/sue\u00f1o/ansiedad)\n3. **Mini-consejo cient\u00edfico** relacionado con su objetivo (2-3 l\u00edneas m\u00e1ximo)\n4. **Recordatorio de la gu\u00eda gratuita** que recibir\u00e1n\n5. **Call to Action suave** para revisar su email\n\n## TONO:\n- C\u00e1lido pero profesional\n- Cient\u00edfico pero accesible\n- Motivador sin ser exagerado\n- M\u00e1ximo 150 palabras\n\n## MAPEO DE OBJETIVOS:\n- stress_reduction \u2192 \"reducir el estr\u00e9s\"\n- focus \u2192 \"mejorar tu enfoque y concentraci\u00f3n\"\n- sleep \u2192 \"dormir mejor y recuperar tu descanso\"\n- anxiety \u2192 \"controlar la ansiedad\"\n\n## EJEMPLO DE SALIDA (NO COPIES LITERAL):\nHola [Nombre],\n\nGracias por unirte a MindHafen. Entiendo que tu objetivo principal es [objetivo personalizado], y quiero que sepas que has dado el primer paso m\u00e1s importante: decidir tomar acci\u00f3n.\n\n[Consejo cient\u00edfico breve relacionado con el objetivo]\n\nEn los pr\u00f3ximos minutos recibir\u00e1s nuestra Gu\u00eda de Descompresi\u00f3n Neuronal en tu bandeja de entrada. Es un documento pr\u00e1ctico dise\u00f1ado para que empieces hoy mismo.\n\nEstamos aqu\u00ed para acompa\u00f1arte en este proceso.\n\nCon compromiso cient\u00edfico,\nEquipo MindHafen"
+                }
+            },
+            "id": "llm-chain",
+            "name": "AI Agent - Email Generator",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 2.1,
+            "position": [
+                660,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "YOUR_GOOGLE_SHEET_ID",
+                    "mode": "list",
+                    "cachedResultName": "MindHafen Leads"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list",
+                    "cachedResultName": "Sheet1"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Timestamp": "={{ $now.toISO() }}",
+                        "Name": "={{ $('Webhook').item.json.body.name }}",
+                        "Email": "={{ $('Webhook').item.json.body.email }}",
+                        "Goal": "={{ $('Webhook').item.json.body.goal }}",
+                        "Source": "={{ $('Webhook').item.json.body.source }}",
+                        "Status": "Registered"
+                    }
+                },
+                "options": {}
+            },
+            "id": "google-sheets",
+            "name": "Save to Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                900,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "fromEmail": "noreply@generarise.space",
+                "toEmail": "={{ $('Webhook').item.json.body.email }}",
+                "subject": "=Bienvenido a MindHafen, {{ $('Webhook').item.json.body.name.split(' ')[0] }}",
+                "emailType": "html",
+                "message": "={{ $json.html }}",
+                "options": {}
+            },
+            "id": "send-email",
+            "name": "Send Email",
+            "type": "n8n-nodes-base.emailSend",
+            "typeVersion": 2.1,
+            "position": [
+                1240,
+                300
+            ],
+            "credentials": {
+                "smtp": {
+                    "id": "YOUR_SMTP_CREDENTIAL_ID",
+                    "name": "SMTP account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"success\": true, \"message\": \"Gracias por registrarte. Revisa tu email.\", \"name\": $('Webhook').item.json.body.name } }}"
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1480,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "\n    const htmlTemplate = `<!DOCTYPE html>\n<html lang=\"es\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Bienvenida a MindHafen</title>\n</head>\n\n<body\n    style=\"margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f0f4f8; color: #334e68;\">\n    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"\n        style=\"background-color: #f0f4f8; padding: 40px 20px;\">\n        <tr>\n            <td align=\"center\">\n                <!-- Main Container -->\n                <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\"\n                    style=\"background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(50, 50, 93, 0.05), 0 5px 15px rgba(0, 0, 0, 0.05);\">\n\n                    <!-- Header -->\n                    <tr>\n                        <td\n                            style=\"background-color: #ffffff; padding: 40px 30px 20px 30px; text-align: center; border-bottom: 1px solid #eef2f7;\">\n                            <h1\n                                style=\"margin: 0; color: #102a43; font-size: 26px; font-weight: 700; letter-spacing: -0.5px;\">\n                                Mind<span style=\"color: #38b2ac;\">Hafen</span>\n                            </h1>\n                            <p\n                                style=\"margin: 5px 0 0 0; color: #829ab1; font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;\">\n                                Tu Refugio Mental\n                            </p>\n                        </td>\n                    </tr>\n\n                    <!-- Hero Image / Gradient -->\n                    <tr>\n                        <td style=\"background: linear-gradient(120deg, #e6fffa 0%, #b2f5ea 100%); height: 8px;\">\n                        </td>\n                    </tr>\n\n                    <!-- Content -->\n                    <tr>\n                        <td style=\"padding: 40px 30px;\">\n                            <p style=\"margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #334e68;\">\n                                Hola <strong>{{name}}</strong>,\n                            </p>\n\n                            <p style=\"margin: 0 0 20px 0; font-size: 16px; line-height: 1.6; color: #486581;\">\n                                Gracias por dar el paso hacia tu bienestar digital. Hemos recibido tu registro y\n                                entendemos que tu objetivo principal es:\n                            </p>\n\n                            <!-- Goal Highlight Box -->\n                            <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 0 0 25px 0;\">\n                                <tr>\n                                    <td\n                                        style=\"background-color: #f0fcf9; border-left: 4px solid #38b2ac; padding: 20px; border-radius: 0 8px 8px 0;\">\n                                        <p\n                                            style=\"margin: 0; font-size: 16px; font-weight: 500; color: #234e52; font-style: italic;\">\n                                            \"{{goal}}\"\n                                        </p>\n                                    </td>\n                                </tr>\n                            </table>\n\n                            <!-- AI Message / Tip Content -->\n                            <div style=\"margin-bottom: 30px; color: #486581; line-height: 1.7; font-size: 16px;\">\n                                {{content}}\n                            </div>\n\n                            <p style=\"margin: 0 0 30px 0; font-size: 16px; line-height: 1.6; color: #486581;\">\n                                Para apoyarte en este camino, hemos preparado tu <strong>Gu\u00eda de Descompresi\u00f3n\n                                    Neuronal</strong>. Puedes acceder a ella y comenzar tu primera sesi\u00f3n de calma\n                                pulsando el bot\u00f3n a continuaci\u00f3n.\n                            </p>\n\n                            <!-- CTA Button -->\n                            <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin: 0 0 30px 0;\">\n                                <tr>\n                                    <td align=\"center\" style=\"padding: 10px 0;\">\n                                        <a href=\"https://mindhafen.generarise.space/dashboard.html\"\n                                            style=\"display: inline-block; background: linear-gradient(135deg, #38b2ac 0%, #319795 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 50px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 15px rgba(56, 178, 172, 0.3); transition: transform 0.2s;\">\n                                            Comenzar Ahora\n                                        </a>\n                                    </td>\n                                </tr>\n                            </table>\n\n                            <p\n                                style=\"margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #829ab1; text-align: center;\">\n                                <em>O accede directamente a:</em><br>\n                                <a href=\"https://mindhafen.generarise.space/dashboard.html\"\n                                    style=\"color: #38b2ac; text-decoration: none; font-weight: 600;\">mindhafen.generarise.space</a>\n                            </p>\n\n                            <!-- Separator -->\n                            <hr style=\"border: none; border-top: 1px solid #eef2f7; margin: 30px 0;\">\n\n                            <p style=\"margin: 0; font-size: 15px; line-height: 1.6; color: #334e68;\">\n                                Respira profundo,<br>\n                                <strong>Equipo MindHafen</strong>\n                            </p>\n                        </td>\n                    </tr>\n\n                    <!-- Footer -->\n                    <tr>\n                        <td\n                            style=\"background-color: #f7f9fc; padding: 30px; text-align: center; border-top: 1px solid #eef2f7;\">\n                            <p style=\"margin: 0 0 10px 0; font-size: 13px; color: #829ab1;\">\n                                <em>Potenciado por <strong>GenerArise AI</strong></em>\n                            </p>\n                            <p style=\"margin: 0; font-size: 12px; color: #9fb3c8; line-height: 1.5;\">\n                                \u00a9 2026 MindHafen. Todos los derechos reservados.<br>\n                                <a href=\"#\" style=\"color: #829ab1; text-decoration: underline;\">Darme de baja</a>\n                            </p>\n                        </td>\n                    </tr>\n\n                </table>\n            </td>\n        </tr>\n    </table>\n</body>\n\n</html>`;\n    \n    // Variables from previous nodes\n    // Using defensive checks\n    const body = $('Webhook').item.json.body || {};\n    const name = body.name || 'Usuario';\n    const goal = body.goal || 'Bienestar';\n    \n    const aiOutput = $('AI Agent - Email Generator').item.json.output || '';\n    \n    // Simple Replace\n    let finalHtml = htmlTemplate.replace('{{name}}', name);\n    finalHtml = finalHtml.replace('{{goal}}', goal);\n    finalHtml = finalHtml.replace('{{content}}', aiOutput.replace(/\\n/g, '<br>')); // Convert newlines to breaks\n    \n    return {\n        json: {\n            html: finalHtml\n        }\n    };\n    "
+            },
+            "id": "html_builder",
+            "name": "HTML Builder",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1020,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent - Email Generator",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent - Email Generator",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent - Email Generator": {
+            "main": [
+                [
+                    {
+                        "node": "Save to Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save to Google Sheets": {
+            "main": [
+                [
+                    {
+                        "node": "HTML Builder",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Email": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "HTML Builder": {
+            "main": [
+                [
+                    {
+                        "node": "Send Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-24T00:00:00.000Z",
+    "versionId": "production-v2"
+}

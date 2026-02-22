@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>MindHafen - Salud Mental Digital basada en Neurociencia</title>
+    <meta name="description"
+        content="Descubre el enfoque neuro-científico para recuperar el control de tu bienestar. Sin medicamentos, 100% natural, diseñado para tu ritmo de vida. Reduce estrés, mejora enfoque, controla ansiedad.">
+    <meta name="keywords"
+        content="salud mental, bienestar digital, neurociencia, meditación, ansiedad, estrés, mindfulness, terapia digital">
+    <meta name="author" content="MindHafen">
+
+    <!-- Open Graph (Redes Sociales) -->
+    <meta property="og:title" content="MindHafen - Tu Mente, Tu Refugio">
+    <meta property="og:description"
+        content="Salud Mental Digital basada en neurociencia. Reduce estrés y mejora tu bienestar sin medicamentos.">
+    <meta property="og:image" content="https://mindhafen.agentes.space/assets/logo_mindhafen.png">
+    <meta property="og:url" content="https://mindhafen.agentes.space">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="MindHafen - Tu Mente, Tu Refugio">
+    <meta name="twitter:description" content="Salud Mental Digital basada en neurociencia">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="author" href="https://agentes.space" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-96x96.png">
+    <link rel="apple-touch-icon" sizes="57x57" href="assets/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="assets/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="assets/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="assets/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="assets/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="assets/ms-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="assets/ms-icon-150x150.png">
+    <link rel="manifest" href="assets/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="assets/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<body>
+
+    <nav class="container">
+        <div class="logo">
+            <img src="assets/logo_mindhafen.png" alt="MindHafen Logo">
+            <span>MindHafen</span>
+        </div>
+        <div class="nav-links">
+            <a href="#features">Cómo funciona</a>
+            <a href="#guides">Guías Gratuitas</a>
+            <a href="#about">Nosotros</a>
+            <a href="dashboard.html" class="nav-access-btn"
+                style="margin-left: 20px; padding: 8px 20px; border: 1px solid var(--primary); border-radius: 50px; color: var(--text-main); text-decoration: none; font-size: 0.9rem;">Acceso
+                Cliente</a>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menú">
+            <i class="fas fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-content">
+            <button class="mobile-menu-close" id="mobileMenuClose">
+                <i class="fas fa-times"></i>
+            </button>
+            <nav class="mobile-nav">
+                <a href="#features" class="mobile-nav-link">Cómo funciona</a>
+                <a href="#guides" class="mobile-nav-link">Guías Gratuitas</a>
+                <a href="#about" class="mobile-nav-link">Nosotros</a>
+            </nav>
+        </div>
+    </div>
+
+    <header class="container hero">
+        <div class="hero-content">
+            <h1>Tu Mente, <span class="text-gradient">Tu Refugio.</span></h1>
+            <p>Descubre el enfoque neuro-científico para recuperar el control de tu bienestar. Sin medicamentos, 100%
+                natural, diseñado para tu ritmo de vida.</p>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-check-circle" style="color: var(--accent);"></i> Validación Científica
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-check-circle" style="color: var(--accent);"></i> Acceso 24/7
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-form">
+            <h3>Comienza tu viaje hoy</h3>
+            <p style="font-size: 0.9rem; margin-bottom: 1rem; color: var(--text-muted);">Obtén nuestra "Guía de
+                Descompresión Neuronal" gratis al registrarte.</p>
+
+            <form id="signupForm">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" name="name" required placeholder="Ej. Juan Pérez">
+                </div>
+                <div class="form-group">
+                    <label>Email Profesional</label>
+                    <input type="email" name="email" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Objetivo Principal</label>
+                    <select name="goal">
+                        <option value="stress_reduction">Reducir Estrés</option>
+                        <option value="focus">Mejorar Enfoque</option>
+                        <option value="sleep">Dormir Mejor</option>
+                        <option value="anxiety">Controlar Ansiedad</option>
+                    </select>
+                </div>
+                <!-- Hidden inputs for tracking -->
+                <input type="hidden" name="source" value="mindhafen_mvp_landing">
+
+                <button type="submit" class="btn" id="submitBtn">
+                    Descargar Guía y Acceder <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                </button>
+                <div id="statusResult" class="status-msg"></div>
+            </form>
+        </div>
+    </header>
+
+    <section id="features" class="container features">
+        <div class="section-title">
+            <h2>Tecnología al servicio de tu <span class="text-gradient">paz mental</span></h2>
+        </div>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <i class="fas fa-brain feature-icon"></i>
+                <h3>Neuroplasticidad Aplicada</h3>
+                <p>Ejercicios diseñados para reconfigurar tus respuestas al estrés y fortalecer la resiliencia mental.
+                </p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-mobile-alt feature-icon"></i>
+                <h3>Terapia Digital</h3>
+                <p>Herramientas accesibles desde tu bolsillo, en cualquier momento que lo necesites.</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line feature-icon"></i>
+                <h3>Seguimiento Activo</h3>
+                <p>Monitorea tu progreso con métricas claras y celebra cada pequeña victoria.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="guides" class="container guides-section">
+        <div class="section-title">
+            <h2>Guías <span class="text-gradient">Gratuitas</span></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">
+                Descarga nuestras guías científicamente validadas para comenzar tu proceso de recuperación hoy mismo.
+            </p>
+        </div>
+        <div class="guides-grid">
+            <div class="guide-card">
+                <div class="guide-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Descompresión Neuronal</h3>
+                <p>Técnicas validadas para reducir el estrés crónico en 15 minutos diarios.</p>
+                <a href="guia-descompresion.html" class="guide-download-btn">Ver Guía Digital <i
+                        class="fas fa-eye"></i></a>
+            </div>
+            <div class="guide-card">
+                <div class="guide-icon">
+                    <i class="fas fa-moon"></i>
+                </div>
+                <h3>Protocolo de Sueño Profundo</h3>
+                <p>Rutina neurológica para recuperar la calidad de tu descanso nocturno.</p>
+                <a href="protocolo-sueno.html" class="guide-download-btn">Ver Guía Digital <i
+                        class="fas fa-eye"></i></a>
+            </div>
+            <div class="guide-card">
+                <div class="guide-icon">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <h3>Control de Ansiedad Rápido</h3>
+                <p>Ejercicios de regulación del sistema nervioso respaldados por ciencia.</p>
+                <a href="control-ansiedad.html" class="guide-download-btn">Ver Guía Digital <i
+                        class="fas fa-eye"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="container pricing-section" style="padding: 4rem 0;">
+        <div class="section-title">
+            <h2>Membresía <span class="text-gradient">Gimnasio Mental</span></h2>
+            <p style="color: var(--text-muted); max-width: 600px; margin: 1rem auto;">
+                Entrena tu mente como entrenas tu cuerpo. Acceso ilimitado a todas las herramientas por menos de lo que
+                cuesta un café.
+            </p>
+        </div>
+
+        <div class="pricing-card"
+            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 3rem; max-width: 500px; margin: 0 auto; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div class="badge"
+                style="background: var(--accent); color: white; padding: 5px 15px; border-radius: 50px; font-size: 0.8rem; display: inline-block; margin-bottom: 1rem;">
+                OFERTA LANZAMIENTO</div>
+            <h3 style="font-size: 2rem; margin-bottom: 0.5rem;">MindHafen PRO</h3>
+            <div class="price" style="font-size: 3.5rem; font-weight: 700; color: white; margin-bottom: 2rem;">
+                $4.900 <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">ARS/mes</span>
+            </div>
+
+            <ul style="text-align: left; margin-bottom: 2.5rem; list-style: none;">
+                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-check"
+                        style="color: var(--accent);"></i> Acceso Ilimitado a Guías de Sueño y Ansiedad</li>
+                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-check"
+                        style="color: var(--accent);"></i> Nuevas "Rutinas Neuronales" cada semana</li>
+                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-check"
+                        style="color: var(--accent);"></i> Soporte Prioritario por WhatsApp</li>
+                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;"><i class="fas fa-check"
+                        style="color: var(--accent);"></i> Cancelas cuando quieras</li>
+            </ul>
+
+            <div style="display: flex; flex-col; gap: 10px;">
+                <a href="https://www.mercadopago.com.ar/subscriptions/checkout?preapproval_plan_id=005726e646b14398a4e41044f045a7b2"
+                    target="_blank" class="btn"
+                    style="width: 100%; justify-content: center; background: #009ee3; border: none;">
+                    Suscribirse con MercadoPago <i class="fas fa-bolt" style="margin-left: 10px;"></i>
+                </a>
+                <a href="LINK_PAYPAL_AQUI" target="_blank" class="btn"
+                    style="width: 100%; justify-content: center; background: #0070ba; border: none; margin-top: 10px;">
+                    Suscribirse con PayPal ($5 USD)
+                </a>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">Pago seguro vía MercadoPago /
+                PayPal. Acceso inmediato.</p>
+        </div>
+
+        <section id="about" class="container about-section">
+            <div class="section-title">
+                <h2>Sobre <span class="text-gradient">MindHafen</span></h2>
+            </div>
+            <div class="about-content">
+                <div class="about-text">
+                    <h3>Nuestra Misión</h3>
+                    <p>
+                        MindHafen nace de la convicción de que el bienestar mental debe ser accesible para todos.
+                        Combinamos los últimos avances en neurociencia con tecnología digital para crear herramientas
+                        efectivas, naturales y disponibles 24/7.
+                    </p>
+                    <p>
+                        Nuestro enfoque se basa en la neuroplasticidad: la capacidad del cerebro para reorganizarse
+                        y adaptarse. No ofrecemos soluciones mágicas, sino procesos científicamente validados que
+                        requieren compromiso pero generan resultados reales y duraderos.
+                    </p>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <div class="stat-number">10,000+</div>
+                            <div class="stat-label">Usuarios Activos</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">95%</div>
+                            <div class="stat-label">Tasa de Satisfacción</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number">24/7</div>
+                            <div class="stat-label">Acceso Inmediato</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <img src="assets/logo_mindhafen.png" alt="MindHafen" height="30">
+                        <span>MindHafen</span>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#features">Cómo funciona</a>
+                        <a href="#guides">Guías</a>
+                        <a href="#about">Nosotros</a>
+                        <a href="legal.html" style="font-size: 0.9em; opacity: 0.8;">Legales</a>
+                    </div>
+                    <div class="footer-copy">
+                        <p>&copy; 2026 MindHafen. Todos los derechos reservados. | <a href="legal.html"
+                                style="color: inherit; text-decoration: underline;">Términos y Privacidad</a></p>
+                        <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.7;">
+                            Developed & Powered by <a href="https://agentes.space" target="_blank"
+                                style="color: var(--primary); text-decoration: none; font-weight: 600;">GenerArise
+                                AI</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- SweetAlert2 for nice alerts -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="script.js"></script>
+</body>
+
+</html>

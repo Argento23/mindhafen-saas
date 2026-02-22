@@ -1,0 +1,495 @@
+{
+    "name": "MindHafen - Autonomous Lead Generation (HTML Premium)",
+    "nodes": [
+        {
+            "parameters": {
+                "rule": {
+                    "interval": [
+                        {
+                            "field": "hours",
+                            "triggerAtHour": 10
+                        }
+                    ]
+                }
+            },
+            "id": "schedule",
+            "name": "Cron Diario (10am)",
+            "type": "n8n-nodes-base.cron",
+            "typeVersion": 1,
+            "position": [
+                240,
+                400
+            ]
+        },
+        {
+            "parameters": {},
+            "id": "start",
+            "name": "Manual Trigger",
+            "type": "n8n-nodes-base.manualTrigger",
+            "typeVersion": 1,
+            "position": [
+                240,
+                600
+            ]
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "search_term",
+                            "value": "Psicólogos"
+                        },
+                        {
+                            "name": "location",
+                            "value": "Buenos Aires, Argentina"
+                        },
+                        {
+                            "name": "banner_url",
+                            "value": "https://images.unsplash.com/photo-1506126613408-eca07ce68773?q=80&w=800&auto=format&fit=crop"
+                        }
+                    ]
+                }
+            },
+            "id": "config",
+            "name": "CONFIG",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 1,
+            "position": [
+                460,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "url": "https://serpapi.com/search.json",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "queryAuth",
+                "sendQuery": true,
+                "queryParameters": {
+                    "parameters": [
+                        {
+                            "name": "api_key",
+                            "value": "9be0d43581dc9220232e9a2819f308c303a32082a1e62f97c9c87b75dfde8d72"
+                        },
+                        {
+                            "name": "engine",
+                            "value": "google_maps"
+                        },
+                        {
+                            "name": "q",
+                            "value": "={{ $json.search_term + ' en ' + $json.location }}"
+                        },
+                        {
+                            "name": "num",
+                            "value": "10"
+                        }
+                    ]
+                }
+            },
+            "id": "serp",
+            "name": "Google Maps",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                680,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "fieldToSplitOut": "local_results"
+            },
+            "id": "split",
+            "name": "Dividir",
+            "type": "n8n-nodes-base.itemLists",
+            "typeVersion": 3,
+            "position": [
+                900,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "batchSize": 1
+            },
+            "id": "loop",
+            "name": "Loop",
+            "type": "n8n-nodes-base.splitInBatches",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "url": "={{ $json.website }}",
+                "options": {
+                    "timeout": 5000
+                }
+            },
+            "id": "web",
+            "name": "Visitar Web",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.1,
+            "position": [
+                1340,
+                400
+            ],
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "jsCode": "const html = $input.item.json.data || '';\nconst emailRegex = /([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\\.[a-zA-Z0-9_-]+)/gi;\nconst mailtoRegex = /mailto:([^\\?\"'>]+)/gi;\nlet foundEmails = [];\nlet match;\nwhile ((match = mailtoRegex.exec(html)) !== null) {\n    if (match[1]) foundEmails.push(match[1]);\n}\nconst textMatches = html.match(emailRegex) || [];\nfoundEmails = [...foundEmails, ...textMatches];\nconst uniqueEmails = [...new Set(foundEmails.map(e => e.trim().toLowerCase()))];\nconst validEmails = uniqueEmails.filter(e => !e.match(/\\.(png|jpg|jpeg|gif|css|js|svg)$/i) && e.length < 100 && e.includes('@'));\nconst bestEmail = validEmails.length > 0 ? validEmails[0] : '';\nconst allEmails = validEmails.join(', ');\nconst text = html.replace(/<style[^>]*>[\\s\\S]*?<\\/style>/gi, '').replace(/<script[^>]*>[\\s\\S]*?<\\/script>/gi, '').replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ');\nconst title = $('Loop').item.json.title || 'Sin nombre';\nconst phone = $('Loop').item.json.phone || '';\nreturn {\n  text: text.substring(0, 5000),\n  title: title,\n  phone_from_maps: phone,\n  regex_email: bestEmail,\n  all_emails: allEmails\n};"
+            },
+            "id": "clean",
+            "name": "Limpiar HTML",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1560,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "model": "meta-llama/llama-3.3-70b-versatile"
+            },
+            "id": "groq",
+            "name": "Groq Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                1780,
+                620
+            ],
+            "credentials": {
+                "groqApi": {
+                    "id": "t7iYzRwAE19Qfzou",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=CONTEXTO:\nEres el Equipo de **MindHafen**, plataforma de salud mental digital basada en neurociencia.\n\nNEGOCIO:\nWeb: {{ $json.text }}\nNombre: {{ $json.title }}\nTel Maps: {{ $json.phone_from_maps }}\nEmail SUGERIDO (encontrado en código): {{ $json.regex_email }} (Verificar si es válido).\nUbicación: {{ $('CONFIG').item.json.location }}\n\nTAREA:\n1. DETECTA AUTOMATIZACIÓN EXISTENTE:\n   - Busca señales: 'chatbot', 'respuesta automática', 'WhatsApp Business', 'turnos online', 'agenda online', 'reserva automatizada', 'Calendly', 'DocPlanner'\n   - Si TIENE automatización → score: 0-2 (descartarlo)\n\n2. EXTRAE Y NORMALIZA DATOS:\n   - Email: BUSCA EN TODO EL TEXTO. Si NO encuentras, usa el 'Email SUGERIDO'. Si no hay nada, devuelve \"\" (vacío).\n   - Teléfono: OBLIGATORIO FORMATO INTERNACIONAL E.164 SIN '+'.\n     * Prioridad: Extraer del texto. Si no hay, USAR 'Tel Maps'.\n     * REGLAS POR PAÍS:\n       - ARGENTINA:\n          * CELULAR (Móvil): Usa prefix '549' + Área (sin 0) + Num (sin 15). Ej: 5493764555555\n          * FIJO (Landline): Usa prefix '54' + Área (sin 0) + Num. Ej: 543764422998\n       - RESTO DEL MUNDO: Código País + Área + Número.\n\n3. IDENTIFICA si es psicólogo, coach, terapeuta o centro de salud mental\n\n4. GENERA WA TEXTO (Cordial, profesional, máximo 2 líneas).\n\n5. GENERA EMAIL BODY (HTML <p> y <ul>): Breve propuesta de valor.\n\nIMPORTANTE:\n- RESPONDE ÚNICAMENTE CON EL JSON.\n- NO USES FORMATO MARKDOWN.\n- Si YA TIENE automatización, score DEBE ser 0.\n\nJSON:\n{\n  \"phone\": \"549...\",\n  \"email\": \"contacto@profesional.com\",\n  \"score\": 8,\n  \"wa_msg\": \"Hola [Nombre], somos MindHafen...\",\n  \"email_body\": \"<p>...</p>\"\n}",
+                "hasOutputParser": true
+            },
+            "id": "ai",
+            "name": "IA Extractor PRO",
+            "type": "@n8n/n8n-nodes-langchain.chainLlm",
+            "typeVersion": 1.4,
+            "position": [
+                1780,
+                400
+            ],
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "jsCode": "let data = $input.item.json;\n\n// --- INTENTO DE RECUPERAR JSON SI LA IA ALUCINÓ ---\nif (!data.email && !data.phone) {\n    const possibleString = data.text || data.output || data.response || '';\n    if (typeof possibleString === 'string') {\n        try {\n            const match = possibleString.match(/\\{[\\s\\S]*\\}/);\n            if (match) {\n                const parsed = JSON.parse(match[0]);\n                data = { ...data, ...parsed };\n            }\n        } catch (e) { }\n    }\n}\n\nconst title = $('Loop').item.json.title || 'Sin nombre';\nconst phone_maps = $('Loop').item.json.phone || '';\nconst banner = $('CONFIG').item.json.banner_url;\nconst regex_email_input = $('Limpiar HTML').item.json.regex_email;\n\n// Datos con fallback\n// Telefono ya viene normalizado por la IA o se usa Maps\nlet phone = data.phone || phone_maps || '5491112345678';\nphone = phone.replace(/[+\\s-]/g, '');\n\n// PRIORITY: AI Email > Regex Email > Fallback\nlet email = (data.email && data.email.trim() !== '' && data.email !== '\"\"') ? data.email : regex_email_input;\nif (!email || email === '' || email === '\"\"' || email === 'SIN-EMAIL@nodetectado.local') email = 'SIN-EMAIL@nodetectado.local';\n\nconst score = data.score || 5;\n\n// Contenido del email (viene de IA o fallback)\nconst emailBody = data.email_body || '<p>Hola <strong>' + title + '</strong>,</p><p>Nos especializamos en herramientas digitales de salud mental.</p>';\n\n// Template HTML (sin nested template literals)\nconst email_html_mindhafen = '<!DOCTYPE html>' +\n'<html lang=\"es\">' +\n'<head>' +\n'    <meta charset=\"UTF-8\">' +\n'    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">' +\n'    <title>MindHafen - Salud Mental Digital</title>' +\n'</head>' +\n'<body style=\"margin: 0; padding: 0; font-family: \\'Helvetica Neue\\', Helvetica, Arial, sans-serif; background-color: #f0f4f8; color: #1a202c;\">' +\n'    <table width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #f0f4f8; padding: 40px 20px;\">' +\n'        <tr>' +\n'            <td align=\"center\">' +\n'                <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(50, 50, 93, 0.05), 0 5px 15px rgba(0, 0, 0, 0.05);\">' +\n'                    <tr>' +\n'                        <td style=\"background-image: url(\\'' + banner + '\\'); background-size: cover; background-position: center; height: 180px; position: relative;\">' +\n'                            <div style=\"position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);\"></div>' +\n'                            <div style=\"position: absolute; bottom: 20px; left: 30px; color: #ffffff; font-size: 28px; font-weight: 700; text-shadow: 0 0 10px rgba(0,0,0,0.9), 0 0 20px rgba(0,0,0,0.7), 2px 2px 4px rgba(0,0,0,1); letter-spacing: 0.5px;\">' +\n'                                Mind<span style=\"color: #81e6d9;\">Hafen</span>' +\n'                            </div>' +\n'                        </td>' +\n'                    </tr>' +\n'                    <tr>' +\n'                        <td style=\"padding: 40px 30px; background-color: #ffffff; color: #1a202c;\">' +\n                            emailBody +\n'                            <div style=\"text-align: center; margin-top: 30px;\">' +\n'                                <a href=\"https://mindhafen.generarise.space\" style=\"display: inline-block; background: linear-gradient(135deg, #38b2ac 0%, #319795 100%); color: #ffffff; text-decoration: none; padding: 14px 35px; border-radius: 50px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 15px rgba(56, 178, 172, 0.3);\">' +\n'                                    Conocer MindHafen' +\n'                                </a>' +\n'                            </div>' +\n'                        </td>' +\n'                    </tr>' +\n'                    <tr>' +\n'                        <td style=\"background-color: #f7f9fc; padding: 25px; text-align: center; border-top: 1px solid #eef2f7; font-size: 12px; color: #829ab1;\">' +\n'                            <p style=\"margin: 5px 0;\"><strong>MindHafen by GenerArise</strong></p>' +\n'                            <p style=\"margin: 0;\">Buenos Aires, Argentina • <a href=\"https://mindhafen.generarise.space\" style=\"color:#38b2ac; text-decoration:none;\">mindhafen.generarise.space</a></p>' +\n'                        </td>' +\n'                    </tr>' +\n'                </table>' +\n'            </td>' +\n'        </tr>' +\n'    </table>' +\n'</body>' +\n'</html>';\n\n// Clean WA\nlet waMsg = data.wa_msg || 'Hola ' + title + ', somos MindHafen. Ofrecemos herramientas digitales de salud mental para profesionales. ¿Te interesa conocerlas?';\nwaMsg = waMsg.replace(/^(Mensaje|Message|WA|WhatsApp)(:|\\s)+/i, '').replace(/^[\\\"']|[\\\"']$/g, '').trim();\n\nreturn {\n  text: title,\n  score: score,\n  email_address: email,\n  phone: phone,\n  wa_msg: waMsg,\n  email_html: email_html_mindhafen,\n  search_term: $('CONFIG').item.json.search_term,\n  location: $('CONFIG').item.json.location,\n  raw_ai: JSON.stringify(data)\n};"
+            },
+            "id": "parse",
+            "name": "Diseñador Email Premium",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                2000,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "senderEmail": "contacto@generarise.space",
+                "toEmail": "={{ $json.email_address }}",
+                "subject": "Propuesta de Automatización - GenerArise",
+                "htmlContent": "={{ $json.email_html }}"
+            },
+            "id": "brevo",
+            "name": "Enviar Email",
+            "type": "n8n-nodes-base.sendInBlue",
+            "typeVersion": 2,
+            "position": [
+                2440,
+                400
+            ],
+            "credentials": {
+                "sendInBlueApi": {
+                    "id": "dRbziQm4hHXAh3GR",
+                    "name": "Brevo account"
+                }
+            },
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "values": {
+                    "string": [
+                        {
+                            "name": "text",
+                            "value": "={{ $('Diseñador Email Premium').item.json.text }}"
+                        },
+                        {
+                            "name": "score",
+                            "value": "={{ $('Diseñador Email Premium').item.json.score }}"
+                        },
+                        {
+                            "name": "email_address",
+                            "value": "={{ $('Diseñador Email Premium').item.json.email_address }}"
+                        },
+                        {
+                            "name": "search_term",
+                            "value": "={{ $('Diseñador Email Premium').item.json.search_term }}"
+                        },
+                        {
+                            "name": "location",
+                            "value": "={{ $('Diseñador Email Premium').item.json.location }}"
+                        },
+                        {
+                            "name": "raw",
+                            "value": "={{ $('Diseñador Email Premium').item.json.raw_ai }}"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "prepare_data",
+            "name": "Datos Finales",
+            "type": "n8n-nodes-base.set",
+            "typeVersion": 2,
+            "position": [
+                2660,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "1HSNrK1Zmk2WqU14QZgxpFmvShdPSRWA41GxRPQ956Eo",
+                    "mode": "id"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "Hoja 1",
+                    "mode": "list"
+                },
+                "columns": {
+                    "mappingMode": "autoMapInputData",
+                    "value": {}
+                }
+            },
+            "id": "sheet",
+            "name": "Guardar en Sheet",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                2880,
+                400
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "zwdmBzveCXv4B3Ec",
+                    "name": "Google Sheets account"
+                }
+            },
+            "continueOnFail": true
+        },
+        {
+            "parameters": {
+                "amount": 120,
+                "unit": "seconds"
+            },
+            "id": "wait",
+            "name": "Esperar (2 min)",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                3100,
+                400
+            ]
+        }
+    ],
+    "connections": {
+        "Cron Diario (10am)": {
+            "main": [
+                [
+                    {
+                        "node": "CONFIG",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Manual Trigger": {
+            "main": [
+                [
+                    {
+                        "node": "CONFIG",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "CONFIG": {
+            "main": [
+                [
+                    {
+                        "node": "Google Maps",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Maps": {
+            "main": [
+                [
+                    {
+                        "node": "Dividir",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Dividir": {
+            "main": [
+                [
+                    {
+                        "node": "Loop",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Loop": {
+            "main": [
+                [
+                    {
+                        "node": "Visitar Web",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Visitar Web": {
+            "main": [
+                [
+                    {
+                        "node": "Limpiar HTML",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Limpiar HTML": {
+            "main": [
+                [
+                    {
+                        "node": "IA Extractor PRO",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "IA Extractor PRO",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "IA Extractor PRO": {
+            "main": [
+                [
+                    {
+                        "node": "Diseñador Email Premium",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Diseñador Email Premium": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar WhatsApp (Texto)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar WhatsApp (Texto)": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar Email": {
+            "main": [
+                [
+                    {
+                        "node": "Datos Finales",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Datos Finales": {
+            "main": [
+                [
+                    {
+                        "node": "Guardar en Sheet",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Guardar en Sheet": {
+            "main": [
+                [
+                    {
+                        "node": "Esperar (2 min)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Esperar (2 min)": {
+            "main": [
+                [
+                    {
+                        "node": "Loop",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "versionId": "mindhafen-autonomous-v1"
+}

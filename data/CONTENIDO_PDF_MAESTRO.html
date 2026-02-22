@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>MindHafen - Material Educativo para PDF</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --dark: #0f172a;
+            --gray: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background: #f1f5f9;
+        }
+
+        /* Estilo de Página para PDF */
+        .page-container {
+            width: 210mm;
+            /* A4 Width */
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+
+            .page-container {
+                margin: 0;
+                box-shadow: none;
+                width: auto;
+                min-height: auto;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        /* Tipografía */
+        h1 {
+            color: var(--primary);
+            font-size: 32px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: var(--dark);
+            font-size: 24px;
+            margin-top: 40px;
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            text-align: justify;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 0;
+        }
+
+        .hero h1 {
+            border: none;
+            font-size: 48px;
+        }
+
+        .hero p {
+            text-align: center;
+            color: var(--gray);
+            font-size: 20px;
+        }
+
+        .workbook-box {
+            border: 2px dashed var(--gray);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            background: #f8fafc;
+        }
+
+        .scientific-note {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 5px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+        ul {
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            font-size: 12px;
+            color: var(--gray);
+            text-align: center;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="no-print"
+        style="position: fixed; top: 20px; right: 20px; background: #3b82f6; color: white; padding: 15px; border-radius: 50px; cursor: pointer; font-weight: bold; z-index: 1000;"
+        onclick="window.print()">
+        🖨️ IMPRIMIR / GUARDAR PDF
+    </div>
+
+    <!-- GUIA 1: DESCOMPRESIÓN -->
+    <div class="page-container">
+        <div class="hero">
+            <h1>MINDHAFEN</h1>
+            <p>Guía Maestra de Descompresión Neuronal</p>
+            <div style="margin-top: 50px; color: var(--primary); font-weight: bold;">PROTOCOLO AVANZADO DE REGULACIÓN
+            </div>
+        </div>
+        <div class="footer">© 2026 MindHafen - Salud Mental Digital</div>
+    </div>
+
+    <div class="page-container">
+        <h2>El Compromiso Científico</h2>
+        <p>Felicidades por dar el primer paso. El estrés crónico no es una debilidad de carácter; es una
+            <strong>desregulación biológica</strong>. En esta guía no encontrarás "pensamiento positivo" genérico.
+            Encontrarás protocolos de ingeniería biológica.</p>
+
+        <div class="scientific-note">
+            <h3>La Ciencia del Estrés (Eje HPA)</h3>
+            <p>Cuando tu cerebro detecta una amenaza, activa el Eje Hipotalámico-Pituitario-Adrenal (HPA). El problema
+                es que en el siglo XXI, este eje nunca se apaga. Esta guía es el interruptor de apagado mecánico.</p>
+        </div>
+
+        <h2>El Freno Biológico: El Nervio Vago</h2>
+        <p>El Nervio Vago es la "autopista" de la calma. Recorre desde el tronco cerebral hasta el abdomen. Si el estrés
+            es el acelerador, el Nervio Vago es el pedal del freno. Al usar técnicas físicas (respiración y
+            temperatura), "forzamos" al cerebro a entrar en modo de seguridad.</p>
+    </div>
+
+    <div class="page-container">
+        <h2>Protocolo Maestro: El Suspiro Cíclico</h2>
+        <p>Basado en investigaciones de la Universidad de Stanford. Este ejercicio es la herramienta #1 de MindHafen.
+        </p>
+        <div class="workbook-box">
+            <ol>
+                <li><strong>Inhala profundo</strong> por la nariz (2-3 segundos).</li>
+                <li><strong>Pequeño sorbo extra:</strong> Toma otra respiración corta y rápida al final.</li>
+                <li><strong>Exhala muy lento:</strong> Por la boca, como si tuvieras una pajita (6-8 segundos).</li>
+            </ol>
+            <p><em>Repite este ciclo 5 veces ahora mismo.</em></p>
+        </div>
+
+        <h2>El Reset Térmico</h2>
+        <p>Todos los mamíferos tenemos un reflejo de inmersión. Al sumergir los receptores alrededor de los ojos en agua
+            fría, el cuerpo envía una señal al corazón para bajar las pulsaciones instantáneamente.</p>
+    </div>
+
+    <div class="page-container">
+        <h2>Workshop: Mapeo de Disparadores</h2>
+        <div class="workbook-box">
+            <p>1. ¿Qué situación física hizo que mi corazón se acelerara hoy?</p>
+            <div style="border-bottom: 1px solid #ddd; height: 30px;"></div>
+            <p>2. ¿Qué pensamiento recurrente aparece antes de la ansiedad?</p>
+            <div style="border-bottom: 1px solid #ddd; height: 30px;"></div>
+            <p>3. ¿En qué parte del cuerpo siento la tensión?</p>
+            <div style="border-bottom: 1px solid #ddd; height: 30px;"></div>
+        </div>
+
+        <h2>La Rutina de 15 Minutos</h2>
+        <p>Para un cerebro resiliente, el día se gana en los primeros minutos:</p>
+        <ul>
+            <li>Min 0-2: Suspiro Cíclico.</li>
+            <li>Min 3-8: Visualización del Campo de Visión Expandido.</li>
+            <li>Min 9-15: Planificación de un solo objetivo crítico.</li>
+        </ul>
+        <div class="footer">MindHafen - Tu Mente es tu Refugio</div>
+    </div>
+
+    <!-- GUIA 2: SUEÑO -->
+    <div class="page-container">
+        <div class="hero">
+            <h1 style="color: var(--accent);">MINDHAFEN</h1>
+            <p>Protocolo de Sueño Profundo</p>
+            <div style="margin-top: 50px; color: var(--accent); font-weight: bold;">OPTIMIZACIÓN CIRCADIANA</div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <h2>Tu Cerebro se Lava mientras Duermes</h2>
+        <p>Durante el sueño, el sistema glinfático elimina toxinas metabólicas (placas beta-amiloides). Sin este
+            proceso, la niebla cognitiva se vuelve crónica.</p>
+
+        <h2>El Reloj Maestro</h2>
+        <p>La proteína Melanopsina en tus ojos le dice al cerebro qué hora es. Para dormir bien a las 11 PM, debes ganar
+            la batalla a las 8 AM con luz solar directa.</p>
+
+        <div class="scientific-note">
+            <h3>Técnica 4-7-8</h3>
+            <p>Inhala en 4s, mantén 7s, exhala en 8s. Repite 4 veces para inducir sedación natural.</p>
+        </div>
+        <div class="footer">© 2026 MindHafen - Higiene Neurológica</div>
+    </div>
+
+    <!-- CURRÍCULUM PREMIUM -->
+    <div class="page-container">
+        <div class="hero">
+            <h1 style="color: #f59e0b; border-bottom-color: #f59e0b;">MINDHAFEN PREMIUM</h1>
+            <p>Currículum de 12 Semanas</p>
+            <div style="margin-top: 50px; color: #f59e0b; font-weight: bold;">TRANSFORMACIÓN DE ARQUITECTURA MENTAL
+            </div>
+        </div>
+    </div>
+
+    <div class="page-container">
+        <h2>Introducción al Programa</h2>
+        <p>Este no es un curso de lectura pasiva. Es un experimento de neuroplasticidad autodirigida. La estructura para
+            cada módulo es: <strong>Ciencia -> Protocolo Somático -> Reencuadre Cognitivo -> Acción.</strong></p>
+
+        <h3>Semana 1: Fundamentos y Sinaptogénesis</h3>
+        <p>Activamos la creencia de que tu cerebro es maleable. Técnica: Registro de disparadores y Dato 0.</p>
+
+        <h3>Semana 2: El Volante del Sistema Nervioso</h3>
+        <p>Dominio del balance Simpático/Parasimpático mediante la Coherencia Cardíaca.</p>
+
+        <h3>Semana 3: Mecánica Pulmonar Avanzada</h3>
+        <p>Control de la química sanguínea a través del Protocolo Huberman.</p>
+    </div>
+
+    <div class="page-container">
+        <h3>Semana 4: Limpieza Cerebral (Sueño)</h3>
+        <p>Optimización del sistema glinfático y ritual T-60.</p>
+
+        <h3>Semana 5: Gestión de Crisis</h3>
+        <p>Neutralización de picos de adrenalina con el Reflejo Mamífero.</p>
+
+        <h3>Semana 6: Descodificación de la Ansiedad</h3>
+        <p>Grounding 5-4-3-2-1 y Etiquetado emocional objetivo.</p>
+
+        <h3>Semana 7: Enfoque Ejecutivo</h3>
+        <p>Rehabilitación de circuitos de dopamina mediante fijación ocular.</p>
+    </div>
+
+    <div class="page-container">
+        <h3>Semana 8: Ingeniería de Hábitos</h3>
+        <p>Uso de los Ganglios Basales y Habit Stacking.</p>
+
+        <h3>Semana 9: Inmunidad Psicológica (Resiliencia)</h3>
+        <p>Crecimiento post-traumático y reencuadre basado en hechos.</p>
+
+        <h3>Semana 10: Desarmando el Pánico</h3>
+        <p>Equilibrio gaseoso y protocolo de "Aterrizaje Seguro".</p>
+
+        <h3>Semana 11: Recarga Neuronal (NSDR)</h3>
+        <p>Acceso a estados Alpha y Theta profundos (Yoga Nidra).</p>
+
+        <h3>Semana 12: Tu Mapa de Bienestar</h3>
+        <p>Integración y plan de mantenimiento de la plasticidad.</p>
+
+        <div class="footer">¡Felicidades por completar tu viaje! - GenerArise Agency</div>
+    </div>
+
+</body>
+
+</html>

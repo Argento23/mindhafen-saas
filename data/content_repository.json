@@ -1,0 +1,109 @@
+{
+    "meta": {
+        "version": "1.0",
+        "last_updated": "2026-01-13",
+        "methodology": [
+            "CBT",
+            "Neuroscience",
+            "Mindfulness-Based Stress Reduction"
+        ]
+    },
+    "modules": {
+        "stress_reduction": {
+            "title": "Protocolo de Descompresión",
+            "description": "Técnicas inmediatas para bajar niveles de cortisol y adrenalina.",
+            "units": [
+                {
+                    "id": "stress_01",
+                    "title": "Respiración Fisiológica (Suspiro Cíclico)",
+                    "type": "audio_guided",
+                    "duration": "3 min",
+                    "rationale": "Activa el sistema nervioso parasimpático en tiempo real.",
+                    "instructions": "Inhala profundamente por la nariz. Antes de exhalar, toma una segunda inhalación corta. Exhala lentamente por la boca."
+                },
+                {
+                    "id": "stress_02",
+                    "title": "Escaneo Corporal (Body Scan)",
+                    "type": "meditation",
+                    "duration": "10 min",
+                    "rationale": "Reconecta la propiocepción y disuelve la tensión muscular acumulada.",
+                    "instructions": "Lleva tu atención a los dedos de los pies. Nota la temperatura, el contacto. Sube lentamente hacia tobillos, rodillas..."
+                }
+            ]
+        },
+        "anxiety_control": {
+            "title": "Gestión de Ansiedad",
+            "description": "Herramientas cognitivas para detener bucles de pensamiento rumiativo.",
+            "units": [
+                {
+                    "id": "anx_01",
+                    "title": "Técnica de Grounding 5-4-3-2-1",
+                    "type": "exercise",
+                    "duration": "5 min",
+                    "rationale": "Saca la mente del futuro (ansiedad) y la trae al presente sensorial.",
+                    "steps": [
+                        "Identifica 5 cosas que puedes ver.",
+                        "Identifica 4 cosas que puedes tocar.",
+                        "Identifica 3 cosas que puedes escuchar.",
+                        "Identifica 2 cosas que puedes oler.",
+                        "Identifica 1 cosa que puedes saborear o una emoción que sientes."
+                    ]
+                },
+                {
+                    "id": "anx_02",
+                    "title": "Desafío Socrático",
+                    "type": "journaling",
+                    "rationale": "Cuestiona la validez de los pensamientos catastróficos.",
+                    "prompts": [
+                        "¿Cuál es el peor escenario posible y qué probabilidad real tiene?",
+                        "¿He superado situaciones similares antes?",
+                        "¿Qué le diría a un amigo en esta misma situación?"
+                    ]
+                }
+            ]
+        },
+        "sleep_optimization": {
+            "title": "Higuiene del Sueño y Descanso",
+            "description": "Optimizacion de ritmos circadianos para recuperación neuronal.",
+            "units": [
+                {
+                    "id": "sleep_01",
+                    "title": "Protocolo 4-7-8",
+                    "type": "exercise",
+                    "duration": "2 min",
+                    "rationale": "Induce sedación leve natural reduciendo la frecuencia cardiaca.",
+                    "instructions": "Inhala por la nariz en 4 segundos. Retén el aire 7 segundos. Exhala sonoramente por la boca en 8 segundos."
+                },
+                {
+                    "id": "sleep_02",
+                    "title": "NSDR (Non-Sleep Deep Rest)",
+                    "type": "audio_guided",
+                    "duration": "20 min",
+                    "rationale": "Recupera dopamina y descanso físico sin necesidad de dormir profundamente.",
+                    "instructions": "Acuéstate boca arriba. Sigue la guía de rotación de consciencia por el cuerpo."
+                }
+            ]
+        }
+    },
+    "knowledge_base": {
+        "concepts": {
+            "neuroplasticidad": "La capacidad del cerebro para formar y reorganizar conexiones sinápticas, especialmente en respuesta al aprendizaje o la experiencia.",
+            "sistema_parasimpatico": "La parte del sistema nervioso responsable de la respuesta de 'descansar y digerir', contraria al estrés.",
+            "cortisol": "La hormona principal del estrés. Niveles crónicamente altos dañan el hipocampo y la memoria."
+        },
+        "faqs": [
+            {
+                "q": "¿Por qué siento ansiedad física?",
+                "a": "Es una respuesta evolutiva de 'lucha o huida'. Tu cuerpo libera adrenalina para prepararte ante un peligro, aunque este sea solo mental."
+            },
+            {
+                "q": "¿Cuánto tardan los ejercicios en hacer efecto?",
+                "a": "Los ejercicios fisiológicos (respiración) actúan en minutos. Los cambios cognitivos (pensamiento) requieren semanas de práctica constante."
+            }
+        ]
+    },
+    "emergency_resources": {
+        "message": "Si sientes que estás en una crisis inmediata o peligro, por favor contacta servicios de emergencia locales.",
+        "global_hotlines_url": "https://www.befrienders.org/"
+    }
+}

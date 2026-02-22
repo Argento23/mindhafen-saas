@@ -1,0 +1,457 @@
+{
+    "name": "MindHafen - MercadoPago + Email Workflow",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "mindhafen-checkout",
+                "options": {}
+            },
+            "id": "webhook-create-payment",
+            "name": "Webhook - Crear Pago",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "mindhafen-checkout"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.mercadopago.com/checkout/preferences",
+                "authentication": "predefinedCredentialType",
+                "nodeCredentialType": "mercadoPagoApi",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer APP_USR-2662030501407901-070617-26cd9e8e4a1f61917e341886b260864c-89801872"
+                        },
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "specifyBody": "json",
+                "jsonBody": "={\n  \"items\": [\n    {\n      \"title\": \"MindHafen - Plan Premium\",\n      \"description\": \"Acceso completo a 12 módulos de salud mental + IA 24/7\",\n      \"quantity\": 1,\n      \"currency_id\": \"ARS\",\n      \"unit_price\": 29999\n    }\n  ],\n  \"payer\": {\n    \"name\": \"{{ $('Webhook - Crear Pago').item.json.body.name }}\",\n    \"email\": \"{{ $('Webhook - Crear Pago').item.json.body.email }}\"\n  },\n  \"back_urls\": {\n    \"success\": \"https://mindhafen.generarise.space/success\",\n    \"failure\": \"https://mindhafen.generarise.space/failure\",\n    \"pending\": \"https://mindhafen.generarise.space/pending\"\n  },\n  \"auto_return\": \"approved\",\n  \"notification_url\": \"https://manager.generarise.space/webhook/mercadopago-notification\",\n  \"external_reference\": \"{{ $('Webhook - Crear Pago').item.json.body.email }}\",\n  \"metadata\": {\n    \"user_name\": \"{{ $('Webhook - Crear Pago').item.json.body.name }}\",\n    \"user_email\": \"{{ $('Webhook - Crear Pago').item.json.body.email }}\",\n    \"user_goal\": \"{{ $('Webhook - Crear Pago').item.json.body.goal }}\"\n  }\n}",
+                "options": {}
+            },
+            "id": "mercadopago-create-preference",
+            "name": "MercadoPago - Crear Preferencia",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                460,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { success: true, checkout_url: $json.init_point, preference_id: $json.id } }}"
+            },
+            "id": "respond-checkout-url",
+            "name": "Responder con URL de Pago",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                680,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "amount": 1,
+                "unit": "hours"
+            },
+            "id": "wait-1-hour",
+            "name": "Esperar 1 Hora",
+            "type": "n8n-nodes-base.wait",
+            "typeVersion": 1,
+            "position": [
+                460,
+                100
+            ],
+            "webhookId": "wait-webhook-id"
+        },
+        {
+            "parameters": {
+                "operation": "getMany",
+                "documentId": {
+                    "__rl": true,
+                    "value": "YOUR_GOOGLE_SHEET_ID",
+                    "mode": "list"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list"
+                },
+                "filters": {
+                    "conditions": [
+                        {
+                            "key": "Email",
+                            "value": "={{ $('Webhook - Crear Pago').item.json.body.email }}",
+                            "operator": "eq"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "check-payment-exists",
+            "name": "Verificar si Compró",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                680,
+                100
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+                    "name": "Google Sheets"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json[\"Email\"] }}",
+                            "operator": "notEmpty"
+                        }
+                    ]
+                }
+            },
+            "id": "if-payment-found",
+            "name": "Si Pago Encontrado",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 1,
+            "position": [
+                900,
+                100
+            ]
+        },
+        {
+            "parameters": {
+                "senderEmail": "noreply@generarise.space",
+                "toEmail": "={{ $('Webhook - Crear Pago').item.json.body.email }}",
+                "subject": "¿Tuviste algún problema con tu inscripción a MindHafen?",
+                "htmlContent": "=<!DOCTYPE html>\n<html>\n<body>\n  <p>Hola <strong>{{ $('Webhook - Crear Pago').item.json.body.name }}</strong>,</p>\n  <p>Notamos que iniciaste tu proceso de inscripción en MindHafen pero no lo completaste.</p>\n  <p>¿Tuviste algún problema técnico o con el medio de pago?</p>\n  <p>Aquí tienes el enlace directo para retomar tu inscripción y asegurar tu lugar:</p>\n  <p><a href=\"{{ $('MercadoPago - Crear Preferencia').item.json.init_point }}\">👉 Retomar Inscripción Aquí</a></p>\n  <p>Si tienes dudas, puedes responder este correo.</p>\n  <p>Saludos,<br>Equipo MindHafen</p>\n</body>\n</html>"
+            },
+            "id": "send-recovery-email",
+            "name": "Brevo - Email Recuperación",
+            "type": "n8n-nodes-base.sendInBlue",
+            "typeVersion": 2,
+            "position": [
+                1120,
+                -20
+            ],
+            "credentials": {
+                "sendInBlueApi": {
+                    "id": "YOUR_BREVO_CREDENTIAL_ID",
+                    "name": "Brevo/Sendinblue"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "mercadopago-notification",
+                "options": {}
+            },
+            "id": "webhook-payment-notification",
+            "name": "Webhook - Notificación de Pago",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                500
+            ],
+            "webhookId": "mercadopago-notification"
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "payment-approved",
+                            "leftValue": "={{ $json.body.action }}",
+                            "rightValue": "payment.created",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "or"
+                },
+                "options": {}
+            },
+            "id": "filter-approved-payments",
+            "name": "Filtrar Pagos Aprobados",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.2,
+            "position": [
+                460,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "method": "GET",
+                "url": "=https://api.mercadopago.com/v1/payments/{{ $('Webhook - Notificación de Pago').item.json.body.data.id }}",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Authorization",
+                            "value": "Bearer APP_USR-2662030501407901-070617-26cd9e8e4a1f61917e341886b260864c-89801872"
+                        }
+                    ]
+                },
+                "options": {}
+            },
+            "id": "get-payment-details",
+            "name": "Obtener Detalles del Pago",
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                680,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "options": {
+                        "caseSensitive": true,
+                        "leftValue": "",
+                        "typeValidation": "strict"
+                    },
+                    "conditions": [
+                        {
+                            "id": "status-approved",
+                            "leftValue": "={{ $json.status }}",
+                            "rightValue": "approved",
+                            "operator": {
+                                "type": "string",
+                                "operation": "equals"
+                            }
+                        }
+                    ],
+                    "combinator": "and"
+                },
+                "options": {}
+            },
+            "id": "check-status-approved",
+            "name": "Verificar Pago Aprobado",
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2.2,
+            "position": [
+                900,
+                500
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "YOUR_GOOGLE_SHEET_ID",
+                    "mode": "list"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Timestamp": "={{ $now.toISO() }}",
+                        "Name": "={{ $json.metadata.user_name }}",
+                        "Email": "={{ $json.metadata.user_email }}",
+                        "Goal": "={{ $json.metadata.user_goal }}",
+                        "Payment_ID": "={{ $json.id }}",
+                        "Amount": "={{ $json.transaction_amount }}",
+                        "Status": "={{ $json.status }}",
+                        "Payment_Method": "={{ $json.payment_method_id }}"
+                    }
+                },
+                "options": {}
+            },
+            "id": "save-to-sheets",
+            "name": "Guardar en Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                1120,
+                500
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+                    "name": "Google Sheets"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "senderEmail": "noreply@generarise.space",
+                "toEmail": "={{ $json.metadata.user_email }}",
+                "subject": "=¡Bienvenido a MindHafen Premium, {{ $json.metadata.user_name }}!",
+                "htmlContent": "=<!DOCTYPE html>\n<html>\n<head>\n  <meta charset=\"utf-8\">\n  <style>\n    body { font-family: 'Outfit', Arial, sans-serif; background: #0f172a; color: #f1f5f9; margin: 0; padding: 0; }\n    .container { max-width: 600px; margin: 0 auto; background: #1e293b; border-radius: 16px; overflow: hidden; }\n    .header { background: linear-gradient(135deg, #3b82f6, #10b981); padding: 40px 30px; text-align: center; }\n    .header h1 { margin: 0; color: white; font-size: 28px; }\n    .content { padding: 40px 30px; }\n    .button { display: inline-block; background: linear-gradient(90deg, #3b82f6, #2563eb); color: white; padding: 16px 32px; border-radius: 50px; text-decoration: none; font-weight: 600; margin: 20px 0; }\n    .footer { background: #0f172a; padding: 20px; text-align: center; font-size: 14px; color: #94a3b8; }\n  </style>\n</head>\n<body>\n  <div class=\"container\">\n    <div class=\"header\">\n      <h1>🧠 ¡Bienvenido a MindHafen Premium!</h1>\n    </div>\n    <div class=\"content\">\n      <p>Hola <strong>{{ $json.metadata.user_name }}</strong>,</p>\n      \n      <p>Tu pago se procesó exitosamente. ¡Tu cuenta premium está lista! 🎉</p>\n      \n      <h3>🔐 Accede a tu Dashboard:</h3>\n      <p>Link: <a href=\"https://app.mindhafen.generarise.space\" style=\"color: #3b82f6;\">app.mindhafen.generarise.space</a></p>\n      <p>Email: {{ $json.metadata.user_email }}</p>\n      <p>Contraseña temporal: <strong>mindhafen2026</strong></p>\n      <p style=\"font-size: 14px; color: #94a3b8;\">(Cámbiala en tu primer acceso)</p>\n      \n      <a href=\"https://app.mindhafen.generarise.space\" class=\"button\">Acceder al Dashboard →</a>\n      \n      <h3>📚 Tu Programa Incluye:</h3>\n      <ul>\n        <li>✅ 12 módulos de neuroplasticidad (1 por semana)</li>\n        <li>✅ Asistente IA 24/7 personalizado</li>\n        <li>✅ Audios guiados + PDFs descargables</li>\n        <li>✅ Tracker de progreso visual</li>\n        <li>✅ Certificado al finalizar</li>\n      </ul>\n      \n      <p><strong>Próximo paso:</strong> Accede a la plataforma y empieza el Módulo 1 hoy mismo.</p>\n      \n      <p>Con compromiso científico,<br>Equipo MindHafen</p>\n    </div>\n    <div class=\"footer\">\n      <p>MindHafen - Tu Mente, Tu Refugio</p>\n      <p>Monto pagado: ${{ $json.transaction_amount }} ARS</p>\n      <p>ID de transacción: {{ $json.id }}</p>\n    </div>\n  </div>\n</body>\n</html>"
+            },
+            "id": "send-welcome-email",
+            "name": "Brevo - Email de Bienvenida",
+            "type": "n8n-nodes-base.sendInBlue",
+            "typeVersion": 2,
+            "position": [
+                1340,
+                500
+            ],
+            "credentials": {
+                "sendInBlueApi": {
+                    "id": "YOUR_BREVO_CREDENTIAL_ID",
+                    "name": "Brevo/Sendinblue"
+                }
+            }
+        }
+    ],
+    "connections": {
+        "Webhook - Crear Pago": {
+            "main": [
+                [
+                    {
+                        "node": "MercadoPago - Crear Preferencia",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "Esperar 1 Hora",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MercadoPago - Crear Preferencia": {
+            "main": [
+                [
+                    {
+                        "node": "Responder con URL de Pago",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Esperar 1 Hora": {
+            "main": [
+                [
+                    {
+                        "node": "Verificar si Compró",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Verificar si Compró": {
+            "main": [
+                [
+                    {
+                        "node": "Si Pago Encontrado",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Si Pago Encontrado": {
+            "main": [
+                null,
+                [
+                    {
+                        "node": "Brevo - Email Recuperación",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook - Notificación de Pago": {
+            "main": [
+                [
+                    {
+                        "node": "Filtrar Pagos Aprobados",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Filtrar Pagos Aprobados": {
+            "main": [
+                [
+                    {
+                        "node": "Obtener Detalles del Pago",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Obtener Detalles del Pago": {
+            "main": [
+                [
+                    {
+                        "node": "Verificar Pago Aprobado",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Verificar Pago Aprobado": {
+            "main": [
+                [
+                    {
+                        "node": "Guardar en Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Guardar en Google Sheets": {
+            "main": [
+                [
+                    {
+                        "node": "Brevo - Email de Bienvenida",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "tags": [],
+    "versionId": "mercadopago-v3-brevo"
+}

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Premium - MindHafen</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: white;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .success {
+            border-color: #10b981;
+        }
+
+        .error {
+            border-color: #ef4444;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .clear-btn {
+            background: #ef4444;
+        }
+
+        .clear-btn:hover {
+            background: #dc2626;
+        }
+
+        code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔧 Test Premium Access - MindHafen</h1>
+
+    <div class="status-box" id="statusBox">
+        <h2>Estado Actual</h2>
+        <p><strong>Email:</strong> <span id="emailStatus">-</span></p>
+        <p><strong>Nombre:</strong> <span id="nameStatus">-</span></p>
+        <p><strong>Premium:</strong> <span id="premiumStatus">-</span></p>
+    </div>
+
+    <div class="status-box">
+        <h2>Acciones</h2>
+        <button onclick="checkStatus()">🔍 Verificar Estado</button>
+        <button onclick="forceAdmin()">🔓 Forzar Admin</button>
+        <button onclick="clearAll()" class="clear-btn">🗑️ Limpiar Todo</button>
+        <button onclick="goToBiblioteca()">📚 Ir a Biblioteca</button>
+    </div>
+
+    <div class="status-box">
+        <h2>Instrucciones</h2>
+        <ol>
+            <li>Haz clic en <strong>"🔓 Forzar Admin"</strong></li>
+            <li>Verifica que el estado muestre <code>Premium: ✅ true</code></li>
+            <li>Haz clic en <strong>"📚 Ir a Biblioteca"</strong></li>
+            <li>Los módulos premium deberían estar desbloqueados</li>
+        </ol>
+        <p><strong>Nota:</strong> Si biblioteca.html sigue mostrando "Mejorar Cuenta", presiona
+            <code>Ctrl+Shift+R</code> para limpiar caché y recargar.</p>
+    </div>
+
+    <div class="status-box" id="consoleLog">
+        <h2>Console Log</h2>
+        <pre id="logOutput"
+            style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; overflow-x: auto;"></pre>
+    </div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('logOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            output.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        function checkStatus() {
+            const email = localStorage.getItem('mindhafen_user_email');
+            const name = localStorage.getItem('mindhafen_user_name');
+            const premium = localStorage.getItem('mindhafen_premium_active');
+
+            document.getElementById('emailStatus').textContent = email || '❌ No configurado';
+            document.getElementById('nameStatus').textContent = name || '❌ No configurado';
+            document.getElementById('premiumStatus').textContent = premium === 'true' ? '✅ true' : '❌ false';
+
+            const statusBox = document.getElementById('statusBox');
+            if (premium === 'true' && email) {
+                statusBox.className = 'status-box success';
+                log('✅ Todo configurado correctamente');
+            } else {
+                statusBox.className = 'status-box error';
+                log('❌ Faltan configuraciones');
+            }
+        }
+
+        function forceAdmin() {
+            localStorage.setItem('mindhafen_user_email', 'gustavodornhofer@gmail.com');
+            localStorage.setItem('mindhafen_user_name', 'Admin Gustavo');
+            localStorage.setItem('mindhafen_premium_active', 'true');
+            log('🔓 ADMIN FORZADO - Todos los valores configurados');
+            checkStatus();
+        }
+
+        function clearAll() {
+            localStorage.removeItem('mindhafen_user_email');
+            localStorage.removeItem('mindhafen_user_name');
+            localStorage.removeItem('mindhafen_premium_active');
+            localStorage.removeItem('mindhafen_user_goal');
+            log('🗑️ Todos los valores eliminados de localStorage');
+            checkStatus();
+        }
+
+        function goToBiblioteca() {
+            log('📚 Redirigiendo a biblioteca.html...');
+            window.location.href = 'biblioteca.html';
+        }
+
+        // Auto-check on load
+        window.addEventListener('load', () => {
+            log('🚀 Página de test cargada');
+            checkStatus();
+        });
+    </script>
+</body>
+
+</html>

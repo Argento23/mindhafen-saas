@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Ansiedad Rápido - MindHafen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --primary: #f87171;
+            /* Reddish for urgent control */
+            --accent: #fbbf24;
+            --text-main: #f1f5f9;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .danger-zone {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid var(--primary);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .technique {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .btn-back {
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="dashboard.html" class="btn-back"><i class="fas fa-arrow-left"></i> Volver al Dashboard</a>
+
+    <div class="header">
+        <h1>Control de Ansiedad Rápido</h1>
+        <p>Técnicas de regulación somática inmediata.</p>
+        <div style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <a href="downloads/Control_Ansiedad_MindHafen.pdf" download class="btn-download" style="
+                display: inline-block;
+                background: var(--primary);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 15px rgba(248, 113, 113, 0.3);
+            ">
+                <i class="fas fa-file-pdf"></i> Descargar Guía en PDF
+            </a>
+            <a href="downloads/Audio_Guia_Ansiedad.mp3" download class="btn-download" style="
+                display: inline-block;
+                background: var(--accent);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+            ">
+                <i class="fas fa-headphones"></i> Descargar Audio Guía
+            </a>
+        </div>
+    </div>
+
+    <div class="danger-zone">
+        <h3>🚨 En caso de Ataque de Pánico</h3>
+        <p>Recuerda: Es una respuesta fisiológica, no es peligroso. Tu cuerpo está sobre-reaccionando.</p>
+    </div>
+
+    <div class="technique">
+        <h3>1. Reflejo de Inmersión</h3>
+        <p>Mójate la cara con agua muy fría. Esto activa el sistema parasimpático de forma instantánea al estimular los
+            receptores del nervio trigémino.</p>
+    </div>
+
+    <div class="technique">
+        <h3>2. Respiración Cuadrada (4-4-4-4)</h3>
+        <p>Inhala 4s, mantén 4s, exhala 4s, mantén 4s. Repite 5 ciclos.</p>
+    </div>
+
+    <div class="technique">
+        <h3>3. Activación Muscular</h3>
+        <p>Aprieta los puños con toda tu fuerza por 5 segundos y suelta de golpe. Siente la diferencia entre tensión y
+            calma.</p>
+    </div>
+
+</body>
+
+</html>

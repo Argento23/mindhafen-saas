@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindHafen Dashboard - Tu Refugio Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #3b82f6;
+            --accent: #10b981;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            background-image: radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 25%), radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.05) 0%, transparent 25%);
+        }
+
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border-glass);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 3rem;
+            color: var(--text-main);
+            text-decoration: none;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            flex-grow: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--text-main);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-link.active {
+            border-left: 4px solid var(--primary);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .user-profile {
+            margin-top: auto;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            padding: 2.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .welcome-text h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-text p {
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .progress-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary) 75%, transparent 0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-circle::after {
+            content: '75%';
+            position: absolute;
+            width: 65px;
+            height: 65px;
+            background: var(--bg-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        .session-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .session-item {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            border: 1px solid var(--border-glass);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .session-item:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .session-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .session-info {
+            flex-grow: 1;
+        }
+
+        .session-duration {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .ai-mentor {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 12px;
+            color: white;
+            margin-top: 1rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                width: 80px;
+                padding: 1rem;
+            }
+
+            .logo span,
+            .nav-link span,
+            .user-info {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 80px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <aside class="sidebar">
+        <a href="index.html" class="logo"><i class="fas fa-brain"></i><span>MindHafen</span></a>
+        <nav class="nav-menu">
+            <div class="nav-item"><a href="#" class="nav-link active"><i
+                        class="fas fa-th-large"></i><span>Dashboard</span></a></div>
+            <div class="nav-item"><a href="biblioteca.html" class="nav-link"><i
+                        class="fas fa-headphones"></i><span>Sesiones</span></a></div>
+            <div class="nav-item"><a href="biblioteca.html" class="nav-link"><i
+                        class="fas fa-book-open"></i><span>Biblioteca</span></a></div>
+            <div class="nav-item"><a href="#" class="nav-link"><i class="fas fa-robot"></i><span>IA Mentor</span></a>
+            </div>
+        </nav>
+        <div class="user-profile">
+            <div class="avatar" id="userAvatar">??</div>
+            <div class="user-info">
+                <div style="font-weight: 600;" id="sidebarUserName">Invitado</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);" id="userPlan">Plan Gratuito</div>
+                <a href="#" id="upgradeLink"
+                    style="color: #f59e0b; font-size: 0.75rem; text-decoration: underline;">Mejorar ahora</a>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div id="upgradeBanner"
+            style="display: none; background: linear-gradient(90deg, #f59e0b, #fbbf24); color: #000; padding: 10px 20px; border-radius: 12px; margin-bottom: 2rem; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 10px;"><i class="fas fa-crown"></i><span
+                    style="font-weight:600; font-size: 0.9rem;">Accede a los 12 módulos y desbloquea el curso
+                    completo.</span></div>
+            <button onclick="Swal.fire({
+                title: 'Elige tu método de pago',
+                text: 'Selecciona la moneda de tu preferencia',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '🇦🇷 Mercado Pago (ARS)',
+                cancelButtonText: '🌍 PayPal (USD)',
+                confirmButtonColor: '#009ee3',
+                cancelButtonColor: '#003087',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) { startCheckout(); } 
+                else if (result.dismiss === Swal.DismissReason.cancel) { window.open('https://www.paypal.com/ncp/payment/UYAWCA6Z5PEEU', '_blank'); }
+            })"
+                style="background: black; color: white; border: none; padding: 6px 15px; border-radius: 8px; font-weight: 600; cursor: pointer;">ACTIAR
+                PREMIUM</button>
+        </div>
+
+        <header class="header">
+            <div class="welcome-text">
+                <h1>Hola, <span style="color: var(--primary);" id="welcomeName">Invitado</span></h1>
+                <p>Es un buen momento para una sesión de enfoque.</p>
+            </div>
+            <div class="date-display"><i class="far fa-calendar-alt"></i> Hoy, 2026</div>
+        </header>
+
+        <div class="dashboard-grid">
+            <div class="left-col">
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-star" style="color: #fbbf24;"></i>Tu Progreso Semanal</div>
+                    <div class="progress-container">
+                        <div class="progress-circle"></div>
+                        <div>
+                            <h3 style="margin-bottom: 5px;">¡Bienvenido!</h3>
+                            <p style="color: var(--text-muted); font-size: 0.9rem;">Comienza tu viaje completando tu
+                                primera sesión hoy.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-play-circle" style="color: var(--primary);"></i>Sesiones
+                        Recomendadas</div>
+                    <div class="session-list">
+                        <div class="session-item" onclick="window.location.href='guia-descompresion.html'">
+                            <div class="session-icon"><i class="fas fa-wind"></i></div>
+                            <div class="session-info">
+                                <div style="font-weight: 600;">Descompresión Neuronal</div>
+                                <div class="session-duration">1.5 min • Calma</div>
+                            </div><i class="fas fa-chevron-right"></i>
+                        </div>
+                        <div class="session-item" onclick="window.location.href='protocolo-sueno.html'">
+                            <div class="session-icon"><i class="fas fa-moon"></i></div>
+                            <div class="session-info">
+                                <div style="font-weight: 600;">Protocolo de Sueño</div>
+                                <div class="session-duration">1.5 min • Descanso</div>
+                            </div><i class="fas fa-chevron-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-col">
+                <div class="card ai-mentor">
+                    <div class="card-title"><i class="fas fa-comment-dots" style="color: var(--accent);"></i>Tu Mentor
+                        IA</div>
+                    <div id="chatHistory"
+                        style="max-height: 300px; overflow-y: auto; margin-bottom: 1rem; padding-right: 10px;">
+                        <div style="display: flex; gap: 12px; margin-bottom: 15px;"><img
+                                src="assets/ai_mentor_avatar.png"
+                                style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #3b82f6;">
+                            <div
+                                style="background: rgba(30, 41, 59, 0.8); padding: 12px; border-radius: 0 15px 15px 15px; font-size: 0.9rem;">
+                                "Hola, soy MindBot. ¿Cómo te sientes hoy?"</div>
+                        </div>
+                    </div>
+                    <input type="text" id="aiInput" class="chat-input" placeholder="Responder al mentor...">
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // FORZAR ACTIVACIÓN PARA ADMIN (sin necesidad de login previo)
+        let userName = localStorage.getItem('mindhafen_user_name');
+        let userEmail = localStorage.getItem('mindhafen_user_email');
+        const userGoal = localStorage.getItem('mindhafen_user_goal');
+
+        // ADMIN AUTO-UNLOCK: Force admin email and premium status
+        const adminEmails = ['gustavodornhofer@gmail.com'];
+
+        // Si no hay email o es el admin, forzar como admin
+        if (!userEmail || adminEmails.includes(userEmail.toLowerCase())) {
+            console.log('🔓 FORZANDO ACCESO ADMIN EN DASHBOARD');
+            localStorage.setItem('mindhafen_user_email', 'gustavodornhofer@gmail.com');
+            localStorage.setItem('mindhafen_user_name', 'Admin Gustavo');
+            localStorage.setItem('mindhafen_premium_active', 'true');
+            userEmail = 'gustavodornhofer@gmail.com';
+            userName = 'Admin Gustavo';
+        }
+
+        const isPremium = localStorage.getItem('mindhafen_premium_active') === 'true';
+        console.log('📊 Dashboard - Estado Premium:', isPremium);
+
+        // Actualizar UI con los datos del usuario
+        document.getElementById('welcomeName').innerText = userName || 'Invitado';
+        document.getElementById('sidebarUserName').innerText = userName || 'Invitado';
+        document.getElementById('userAvatar').innerText = (userName || 'IN').substring(0, 2).toUpperCase();
+        if (!isPremium) {
+            document.getElementById('userPlan').innerText = 'Plan Gratuito';
+            document.getElementById('upgradeBanner').style.display = 'flex';
+        } else {
+            document.getElementById('userPlan').innerText = 'Plan Premium';
+            document.getElementById('upgradeLink').style.display = 'none';
+        }
+
+        async function startCheckout() {
+            if (!userEmail) {
+                Swal.fire({ title: 'Atención', text: 'Debes registrarte primero.', icon: 'warning' }).then(() => { window.location.href = 'index.html'; });
+                return;
+            }
+            Swal.fire({ title: 'Iniciando Pago', text: 'Redirigiendo...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            try {
+                const response = await fetch('https://manager.agentes.space/webhook/mindhafen-checkout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ name: userName, email: userEmail, goal: userGoal }),
+                    mode: 'cors'
+                });
+                const data = await response.json();
+                const checkoutUrl = data.checkout_url || data.init_point;
+                if (checkoutUrl) {
+                    window.location.href = checkoutUrl;
+                } else {
+                    throw new Error('No se recibió URL de pago');
+                }
+            } catch (err) {
+                console.error('Error en checkout:', err);
+                Swal.fire('Error', 'No pudimos conectar con la pasarela de pagos. Por favor, intenta de nuevo.', 'error');
+            }
+        }
+
+        document.getElementById('upgradeLink').addEventListener('click', (e) => {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Elige tu método de pago',
+                text: 'Selecciona la moneda de tu preferencia',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: '🇦🇷 Mercado Pago (ARS)',
+                cancelButtonText: '🌍 PayPal (USD)',
+                confirmButtonColor: '#009ee3',
+                cancelButtonColor: '#003087',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    startCheckout();
+                } else if (result.dismiss === Swal.DismissReason.cancel) {
+                    window.open('https://www.paypal.com/ncp/payment/UYAWCA6Z5PEEU', '_blank');
+                }
+            });
+        });
+
+        const aiInput = document.getElementById('aiInput');
+        const chatHistory = document.getElementById('chatHistory');
+
+        function appendMessage(role, text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.style.display = 'flex'; msgDiv.style.gap = '12px'; msgDiv.style.marginBottom = '15px'; msgDiv.style.animation = 'fadeIn 0.4s ease';
+            if (role === 'user') {
+                msgDiv.style.flexDirection = 'row-reverse';
+                msgDiv.innerHTML = `<div style="background: var(--primary); padding: 12px; border-radius: 15px 0 15px 15px; font-size: 0.9rem; color: white; max-width: 80%;">${text}</div>`;
+            } else {
+                msgDiv.innerHTML = `<img src="assets/ai_mentor_avatar.png" style="width: 35px; height: 35px; border-radius: 50%; border: 2px solid #3b82f6;"><div style="background: rgba(30, 41, 59, 0.8); padding: 12px; border-radius: 0 15px 15px 15px; font-size: 0.9rem; max-width: 80%;">${text}</div>`;
+            }
+            chatHistory.appendChild(msgDiv); chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+
+        aiInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && aiInput.value.trim() !== '') {
+                const userMsg = aiInput.value; aiInput.value = ''; appendMessage('user', userMsg);
+                const loadingDiv = document.createElement('div'); loadingDiv.id = 'aiLoading'; loadingDiv.style.display = 'flex'; loadingDiv.style.gap = '12px'; loadingDiv.style.marginBottom = '15px';
+                loadingDiv.innerHTML = `<img src="assets/ai_mentor_avatar.png" style="width: 35px; height: 35px; border-radius: 50%; opacity: 0.5;"><div style="background: rgba(30, 41, 59, 0.4); padding: 12px; border-radius: 0 15px 15px; font-size: 0.8rem;"><i class="fas fa-spinner fa-spin"></i> MindBot procesando...</div>`;
+                chatHistory.appendChild(loadingDiv);
+                try {
+                    const response = await fetch('https://manager.agentes.space/webhook/mindhafen-ai', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ message: userMsg, user: userName }),
+                        mode: 'cors'
+                    });
+                    const data = await response.json();
+                    document.getElementById('aiLoading').remove();
+                    appendMessage('ai', data.output || data.message || "Error en red neuronal.");
+                } catch (err) { document.getElementById('aiLoading').remove(); appendMessage('ai', "Error de conexión."); }
+            }
+        });
+    </script>
+</body>
+
+</html>

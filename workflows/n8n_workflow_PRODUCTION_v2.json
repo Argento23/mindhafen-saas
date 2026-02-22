@@ -1,0 +1,208 @@
+{
+    "name": "MindHafen - Lead Capture & AI Response (PRODUCTION)",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "mindhafen-registro",
+                "options": {}
+            },
+            "id": "webhook-node",
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2,
+            "position": [
+                240,
+                300
+            ],
+            "webhookId": "8f7cbf0e-4ac0-4660-a524-9af706728a52"
+        },
+        {
+            "parameters": {
+                "model": "llama-3.3-70b-versatile",
+                "options": {
+                    "temperature": 0.7,
+                    "maxTokens": 500
+                }
+            },
+            "id": "groq-model",
+            "name": "Groq Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                660,
+                180
+            ],
+            "credentials": {
+                "groqApi": {
+                    "id": "YOUR_GROQ_CREDENTIAL_ID",
+                    "name": "Groq account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=Usuario registrado:\n- Nombre: {{ $('Webhook').item.json.body.name }}\n- Email: {{ $('Webhook').item.json.body.email }}\n- Objetivo: {{ $('Webhook').item.json.body.goal }}\n\nGenera un email personalizado de bienvenida.",
+                "options": {
+                    "systemMessage": "Eres el Asistente de Bienestar de MindHafen, un sistema de salud mental digital basado en neurociencia.\n\n## TU MISIÓN:\nEscribir un email de bienvenida personalizado, empático y motivador para un nuevo usuario que acaba de registrarse en nuestra lista de espera.\n\n## FORMATO DEL EMAIL (ESTRICTO):\nDevuelve SOLO el contenido del email en texto plano. NO incluyas:\n- Asunto (lo generamos aparte)\n- Firma (la agregamos después)\n- Formato HTML\n- JSON\n\n## ESTRUCTURA:\n1. **Saludo personalizado** usando el nombre del usuario\n2. **Reconocimiento empático** de su objetivo específico (estrés/enfoque/sueño/ansiedad)\n3. **Mini-consejo científico** relacionado con su objetivo (2-3 líneas máximo)\n4. **Recordatorio de la guía gratuita** que recibirán\n5. **Call to Action suave** para revisar su email\n\n## TONO:\n- Cálido pero profesional\n- Científico pero accesible\n- Motivador sin ser exagerado\n- Máximo 150 palabras\n\n## MAPEO DE OBJETIVOS:\n- stress_reduction → \"reducir el estrés\"\n- focus → \"mejorar tu enfoque y concentración\"\n- sleep → \"dormir mejor y recuperar tu descanso\"\n- anxiety → \"controlar la ansiedad\"\n\n## EJEMPLO DE SALIDA (NO COPIES LITERAL):\nHola [Nombre],\n\nGracias por unirte a MindHafen. Entiendo que tu objetivo principal es [objetivo personalizado], y quiero que sepas que has dado el primer paso más importante: decidir tomar acción.\n\n[Consejo científico breve relacionado con el objetivo]\n\nEn los próximos minutos recibirás nuestra Guía de Descompresión Neuronal en tu bandeja de entrada. Es un documento práctico diseñado para que empieces hoy mismo.\n\nEstamos aquí para acompañarte en este proceso.\n\nCon compromiso científico,\nEquipo MindHafen"
+                }
+            },
+            "id": "llm-chain",
+            "name": "AI Agent - Email Generator",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 2.1,
+            "position": [
+                660,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "append",
+                "documentId": {
+                    "__rl": true,
+                    "value": "YOUR_GOOGLE_SHEET_ID",
+                    "mode": "list",
+                    "cachedResultName": "MindHafen Leads"
+                },
+                "sheetName": {
+                    "__rl": true,
+                    "value": "gid=0",
+                    "mode": "list",
+                    "cachedResultName": "Sheet1"
+                },
+                "columns": {
+                    "mappingMode": "defineBelow",
+                    "value": {
+                        "Timestamp": "={{ $now.toISO() }}",
+                        "Name": "={{ $('Webhook').item.json.body.name }}",
+                        "Email": "={{ $('Webhook').item.json.body.email }}",
+                        "Goal": "={{ $('Webhook').item.json.body.goal }}",
+                        "Source": "={{ $('Webhook').item.json.body.source }}",
+                        "Status": "Registered"
+                    }
+                },
+                "options": {}
+            },
+            "id": "google-sheets",
+            "name": "Save to Google Sheets",
+            "type": "n8n-nodes-base.googleSheets",
+            "typeVersion": 4.5,
+            "position": [
+                900,
+                300
+            ],
+            "credentials": {
+                "googleSheetsOAuth2Api": {
+                    "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+                    "name": "Google Sheets account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "fromEmail": "noreply@generarise.space",
+                "toEmail": "={{ $('Webhook').item.json.body.email }}",
+                "subject": "=Bienvenido a MindHafen, {{ $('Webhook').item.json.body.name.split(' ')[0] }}",
+                "emailType": "text",
+                "message": "={{ $('AI Agent - Email Generator').item.json.output }}\n\n---\nMindHafen - Tu Mente, Tu Refugio\nhttps://mindhafen.generarise.space",
+                "options": {}
+            },
+            "id": "send-email",
+            "name": "Send Email",
+            "type": "n8n-nodes-base.emailSend",
+            "typeVersion": 2.1,
+            "position": [
+                1140,
+                300
+            ],
+            "credentials": {
+                "smtp": {
+                    "id": "YOUR_SMTP_CREDENTIAL_ID",
+                    "name": "SMTP account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"success\": true, \"message\": \"Gracias por registrarte. Revisa tu email.\", \"name\": $('Webhook').item.json.body.name } }}"
+            },
+            "id": "respond-webhook",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                1380,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent - Email Generator",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent - Email Generator",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent - Email Generator": {
+            "main": [
+                [
+                    {
+                        "node": "Save to Google Sheets",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Save to Google Sheets": {
+            "main": [
+                [
+                    {
+                        "node": "Send Email",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Send Email": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {},
+    "settings": {
+        "executionOrder": "v1"
+    },
+    "staticData": null,
+    "tags": [],
+    "triggerCount": 0,
+    "updatedAt": "2026-01-24T00:00:00.000Z",
+    "versionId": "production-v2"
+}
