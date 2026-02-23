@@ -84,14 +84,19 @@ window.iniciarPagoPremium = async () => {
     });
 
     try {
+        // Fallback a localStorage si los datos en memoria están vacíos
+        const name = currentUserData.name || localStorage.getItem('mindhafen_user_name');
+        const email = currentUserData.email || localStorage.getItem('mindhafen_user_email');
+        const goal = currentUserData.goal || localStorage.getItem('mindhafen_user_goal');
+
         const response = await fetch('https://manager.generarise.space/webhook/mindhafen-checkout', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: currentUserData.name,
-                email: currentUserData.email,
-                goal: currentUserData.goal
-            })
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            mode: 'cors',
+            body: JSON.stringify({ name, email, goal })
         });
 
         const paymentData = await response.json();
