@@ -57,7 +57,7 @@ const form = document.getElementById('signupForm');
 const submitBtn = document.getElementById('submitBtn');
 
 // Webhook URL - Cambiar si usas otro endpoint
-const WEBHOOK_URL = "https://manager.agentes.space/webhook/mindhafen-registro";
+const WEBHOOK_URL = "https://manager.generarise.space/webhook/mindhafen-registro";
 
 // Detectar si estamos en local (para testing)
 const isLocalTesting = window.location.protocol === 'file:' ||
@@ -84,7 +84,7 @@ window.iniciarPagoPremium = async () => {
     });
 
     try {
-        const response = await fetch('https://manager.agentes.space/webhook/mindhafen-checkout', {
+        const response = await fetch('https://manager.generarise.space/webhook/mindhafen-checkout', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
