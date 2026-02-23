@@ -117,7 +117,7 @@ window.iniciarPagoPremium = async () => {
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // ... UI Loading ...
+    // 1. UI Loading State
     const originalBtnText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
     submitBtn.disabled = true;
@@ -129,13 +129,11 @@ form.addEventListener('submit', async (e) => {
     // GUARDAR DATOS GLOBALES PARA EL PAGO
     currentUserData = data;
 
-    // ... Resto del código de envío ...
-
     console.log('📤 Datos del formulario:', data);
 
-    // 3. MODO LOCAL - Solo aviso en consola, pero intentar envío real
+    // 3. MODO LOCAL - Solo aviso en consola
     if (isLocalTesting) {
-        console.log('🧪 ENTRO EN MODO LOCAL - Intentando envío real de todas formas...');
+        console.log('🧪 MODO LOCAL - Saltando envío real al webhook');
     }
 
     // 4. PRODUCCIÓN - Enviar al webhook
