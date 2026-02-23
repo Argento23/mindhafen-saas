@@ -1,6 +1,7 @@
 {
   "name": "mindhafen-mvp",
   "version": "1.0.0",
+  "type": "module",
   "description": "MVP de Salud Digital - MindHafen",
   "scripts": {
     "dev": "vite",

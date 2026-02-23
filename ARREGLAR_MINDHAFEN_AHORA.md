@@ -130,7 +130,7 @@ Clic en "Descargar Guía y Acceder"
 ✅ Popup verde: "¡Bienvenido a MindHafen!"
 ✅ Formulario se limpia
 ✅ En consola:
-    📤 Datos del formulario: {...}
+    * Path: mindhafen-registro: {...}
     🌐 Enviando a webhook: ...
     📥 Respuesta recibida: 200 OK
     ✅ Éxito: {success: true, ...}

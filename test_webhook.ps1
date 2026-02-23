@@ -7,7 +7,8 @@ Write-Host "`n=== PRUEBA 1: Verificar conectividad básica ===" -ForegroundColor
 try {
     $ping = Test-Connection -ComputerName manager.generarise.space -Count 1 -ErrorAction Stop
     Write-Host "✅ Servidor accesible: $($ping.Address)" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "❌ ERROR: No se puede alcanzar manager.generarise.space" -ForegroundColor Red
     Write-Host "   Verifica tu conexión a internet o que el servidor esté activo" -ForegroundColor Yellow
     exit
@@ -15,13 +16,13 @@ try {
 
 Write-Host "`n=== PRUEBA 2: Test del Webhook (POST con datos) ===" -ForegroundColor Cyan
 
-$webhookUrl = "https://manager.generarise.space/webhook/8f7cbf0e-4ac0-4660-a524-9af706728a52"
+$webhookUrl = "https://manager.generarise.space/webhook/mindhafen-registro"
 
 $testData = @{
-    name = "Test Usuario"
-    email = "test@example.com"
-    goal = "stress_reduction"
-    source = "diagnostic_test"
+    name        = "Test Usuario"
+    email       = "test@example.com"
+    goal        = "stress_reduction"
+    source      = "diagnostic_test"
     submittedAt = (Get-Date).ToUniversalTime().ToString("o")
 } | ConvertTo-Json
 
@@ -44,7 +45,8 @@ try {
     Write-Host "Respuesta:" -ForegroundColor Gray
     Write-Host $response.Content -ForegroundColor Gray
 
-} catch {
+}
+catch {
     Write-Host "`n❌ ERROR AL CONECTAR CON EL WEBHOOK" -ForegroundColor Red
     
     if ($_.Exception.Response) {
@@ -57,7 +59,7 @@ try {
                 Write-Host "   - El webhook no existe o la URL está incorrecta" -ForegroundColor White
                 Write-Host "   - Verifica que el workflow esté importado en n8n" -ForegroundColor White
                 Write-Host "   - Verifica que el Path del webhook sea exactamente:" -ForegroundColor White
-                Write-Host "     8f7cbf0e-4ac0-4660-a524-9af706728a52" -ForegroundColor Cyan
+                Write-Host "     mindhafen-registro" -ForegroundColor Cyan
             }
             502 {
                 Write-Host "`n🔍 DIAGNÓSTICO:" -ForegroundColor Yellow
@@ -74,7 +76,8 @@ try {
                 Write-Host "Detalles: $($_.Exception.Message)" -ForegroundColor White
             }
         }
-    } else {
+    }
+    else {
         Write-Host "`n🔍 DIAGNÓSTICO:" -ForegroundColor Yellow
         Write-Host "   - No se pudo establecer conexión" -ForegroundColor White
         Write-Host "   - Posibles causas:" -ForegroundColor White
@@ -90,7 +93,7 @@ Write-Host "`n=== PRUEBA 3: Verificar CORS (desde navegador) ===" -ForegroundCol
 Write-Host "Para verificar CORS, abre la consola del navegador (F12) y ejecuta:" -ForegroundColor Gray
 Write-Host @"
 
-fetch('https://manager.generarise.space/webhook/8f7cbf0e-4ac0-4660-a524-9af706728a52', {
+fetch('https://manager.generarise.space/webhook/mindhafen-registro', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -116,7 +119,7 @@ Si el webhook NO funciona:
    - Workflows → Buscar el workflow de MindHafen
    - Verificar que esté ACTIVO (toggle verde)
    - Abrir el workflow → Verificar que el nodo Webhook tenga:
-     * Path: 8f7cbf0e-4ac0-4660-a524-9af706728a52
+     * Path: mindhafen-registro
      * Method: POST
 
 2️⃣ SI EL WORKFLOW NO ESTÁ:

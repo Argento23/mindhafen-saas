@@ -1,6 +1,16 @@
 # 🚀 Instrucciones de Despliegue - MindHafen
 
+> [!IMPORTANT]
+> **SI EL DESPLIEGUE SE QUEDA "COLGADO" (PENSANDO):**
+> Es porque tu servidor está intentando subir archivos pesados que no necesitamos (como los .zip de 350MB).
+> 
+> **SOLUCIÓN RÁPIDA (3 PASOS):**
+> 1. Asegúrate de que el archivo `.dockerignore` esté en la carpeta principal. (Ya lo creé por ti).
+> 2. En Easypanel, ve a la pestaña **Deploy** y busca el botón **"Deploy without cache"** (Desplegar sin caché).
+> 3. Si usas la pestaña **Files**, asegúrate de que estás dentro de la carpeta `/code/mindhafen`.
+
 ## ✅ CAMBIOS IMPLEMENTADOS
+
 
 ### HTML (index.html)
 - ✅ Meta tags SEO completos (título, descripción, keywords)
@@ -140,24 +150,16 @@
 
 2. **Easypanel detectará automáticamente los cambios** y hará redeploy
 
-### Opción B: Subida Manual (Si no usas Git)
+### Opción B: Subida a Easypanel (Pestaña "Files")
 
-1. **Acceder a Easypanel**
-2. **Ir a tu proyecto → Files**
-3. **Reemplazar los archivos modificados:**
-   - `index.html`
-   - `style.css`
-   - `script.js`
+Si no usas GitHub, haz esto para aplicar mis cambios:
 
-### Opción C: FTP/SFTP
+1. **Abre Easypanel** y ve a tu proyecto de MindHafen.
+2. Ve a la pestaña **Files**.
+3. **Sube los archivos que yo modifiqué** (están en tu computadora en `c:\Users\Gustavo\Downloads\neurova\mindhafen\`):
+   - `index.html`, `dashboard.html`, `vite.config.js`, `package.json`, `script.js`.
+4. Una vez subidos, ve a la pestaña **Deploy** y presiona el botón para que el servidor se actualice.
 
-Si usas un servidor tradicional:
-```bash
-# Usando WinSCP o FileZilla, subir:
-/public_html/index.html
-/public_html/style.css
-/public_html/script.js
-```
 
 ---
 
@@ -215,8 +217,17 @@ Si usas un servidor tradicional:
 2. Revisa los logs de n8n para ver si llegan las peticiones
 3. Prueba el webhook manualmente con el comando PowerShell de arriba
 
-### Problema: "Las secciones nuevas no se ven bien"
-**Solución:** Haz "hard refresh" del navegador (Ctrl + Shift + R) para limpiar caché del CSS.
+### Problema: "Error 404 al acceder a subpáginas"
+**Solución:** 
+Vite por defecto solo construye `index.html`. Asegúrate de:
+1. Haber subido el archivo `vite.config.js` que creamos.
+2. Si usas Nginx directamente, usa esta configuración para que las URLs sin `.html` funcionen:
+   ```nginx
+   location / {
+       try_files $uri $uri.html $uri/ /index.html;
+   }
+   ```
+
 
 ---
 

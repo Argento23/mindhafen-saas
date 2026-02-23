@@ -108,7 +108,7 @@ Una vez que esto funcione, puedes:
 2. **Verificar el webhook ID:**
    ```
    Abrir el workflow → Clic en nodo "Webhook"
-   Path debe ser: 8f7cbf0e-4ac0-4660-a524-9af706728a52
+   Path debe ser: mindhafen-registro (IMPORTANTE: Esto debe coincidir con script.js)
    ```
 
 3. **Ver ejecuciones:**

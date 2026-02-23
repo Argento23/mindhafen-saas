@@ -4,8 +4,12 @@
         {
             "parameters": {
                 "httpMethod": "POST",
-                "path": "8f7cbf0e-4ac0-4660-a524-9af706728a52",
-                "options": {}
+                "path": "mindhafen-registro",
+                "options": {
+                    "allowedOrigins": "*"
+                },
+                "responseMode": "responseNode",
+                "responseData": "firstEntryJson"
             },
             "id": "webhook-node",
             "name": "Webhook",

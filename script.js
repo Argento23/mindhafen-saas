@@ -241,31 +241,31 @@ form.addEventListener('submit', async (e) => {
         let errorTitle = 'Algo salió mal';
 
         // Personalizar mensaje según tipo de error
-        if (error.message.includes('Failed to fetch')) {
+        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
             errorTitle = 'Error de Conexión';
-            errorMessage = 'No se pudo conectar con el servidor. Verifica:\n' +
-                '• Tu conexión a internet\n' +
-                '• Que el servidor esté activo\n' +
-                '• Configuración de firewall/antivirus';
+            errorMessage = 'No se pudo conectar con el servidor n8n. Verifica:\n' +
+                '• Que el servidor manager.generarise.space esté activo\n' +
+                '• Que el workflow esté en modo "Active" (Verde)\n' +
+                '• Tu conexión a internet';
         } else if (error.message.includes('404')) {
             errorTitle = 'Webhook No Encontrado';
-            errorMessage = 'El webhook no está registrado en n8n. Contacta al administrador.';
+            errorMessage = 'El webhook "mindhafen-registro" no está registrado o activo en n8n.';
         } else if (error.message.includes('502')) {
-            errorTitle = 'Servidor Temporalmente No Disponible';
-            errorMessage = 'El servidor n8n está reiniciando. Intenta en 1 minuto.';
+            errorTitle = 'Servidor Reiniciando';
+            errorMessage = 'El servidor n8n está reiniciando (502 Gateway). Intenta en 1 minuto.';
         } else if (error.message.includes('CORS')) {
             errorTitle = 'Error de Seguridad (CORS)';
-            errorMessage = 'El servidor rechazó la petición por configuración de seguridad.';
+            errorMessage = 'El servidor rechazó la petición por configuración de seguridad (CORS).';
         }
 
         Swal.fire({
             title: errorTitle,
             text: errorMessage,
             icon: 'error',
-            confirmButtonColor: '#ef4444',
-            background: '#1e293b',
-            color: '#fff',
-            footer: '<small>Detalles técnicos en la consola del navegador (F12)</small>'
+            confirmButtonColor: '#3b82f6',
+            background: '#0f172a',
+            color: '#f1f5f9',
+            footer: '<small style="color: #64748b;">Detalle: ' + error.message + '</small>'
         });
 
     } finally {
