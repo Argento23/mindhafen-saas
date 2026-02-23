@@ -11,7 +11,7 @@
                 "responseMode": "responseNode"
             },
             "id": "1",
-            "name": "Webhook",
+            "name": "MH_AI_Webhook",
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 2,
             "position": [
@@ -28,7 +28,7 @@
                 }
             },
             "id": "2",
-            "name": "Groq Chat Model",
+            "name": "MH_Groq_Model",
             "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
             "typeVersion": 1,
             "position": [
@@ -45,7 +45,7 @@
                 }
             },
             "id": "3",
-            "name": "AI Agent",
+            "name": "MH_AI_Agent",
             "type": "@n8n/n8n-nodes-langchain.agent",
             "typeVersion": 2.1,
             "position": [
@@ -59,7 +59,7 @@
                 "responseBody": "={\n  \"output\": \"{{ $json.output }}\"\n}"
             },
             "id": "4",
-            "name": "Respond to Webhook",
+            "name": "MH_Respond_Chat",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1.1,
             "position": [
@@ -69,33 +69,33 @@
         }
     ],
     "connections": {
-        "Webhook": {
+        "MH_AI_Webhook": {
             "main": [
                 [
                     {
-                        "node": "AI Agent",
+                        "node": "MH_AI_Agent",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Groq Chat Model": {
+        "MH_Groq_Model": {
             "ai_languageModel": [
                 [
                     {
-                        "node": "AI Agent",
+                        "node": "MH_AI_Agent",
                         "type": "ai_languageModel",
                         "index": 0
                     }
                 ]
             ]
         },
-        "AI Agent": {
+        "MH_AI_Agent": {
             "main": [
                 [
                     {
-                        "node": "Respond to Webhook",
+                        "node": "MH_Respond_Chat",
                         "type": "main",
                         "index": 0
                     }

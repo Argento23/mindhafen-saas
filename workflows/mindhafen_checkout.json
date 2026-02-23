@@ -11,7 +11,7 @@
                 "responseMode": "responseNode"
             },
             "id": "1",
-            "name": "Webhook - Iniciar Pago",
+            "name": "MH_Checkout_Webhook",
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 2,
             "position": [
@@ -42,7 +42,7 @@
                 "jsonBody": "={\n  \"items\": [\n    {\n      \"title\": \"MindHafen - Plan Premium\",\n      \"quantity\": 1,\n      \"currency_id\": \"ARS\",\n      \"unit_price\": 29999\n    }\n  ],\n  \"payer\": {\n    \"name\": \"{{ $json.body.name }}\",\n    \"email\": \"{{ $json.body.email }}\"\n  },\n  \"back_urls\": {\n    \"success\": \"https://mindhafen.generarise.space/success\"\n  },\n  \"auto_return\": \"approved\"\n}"
             },
             "id": "2",
-            "name": "MercadoPago API",
+            "name": "MH_MercadoPago_API",
             "type": "n8n-nodes-base.httpRequest",
             "typeVersion": 4.1,
             "position": [
@@ -56,7 +56,7 @@
                 "responseBody": "={\n  \"success\": true,\n  \"checkout_url\": \"{{ $json.init_point }}\"\n}"
             },
             "id": "3",
-            "name": "Responder URL Pago",
+            "name": "MH_Respond_URL",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1.1,
             "position": [
@@ -67,12 +67,12 @@
         {
             "parameters": {
                 "resource": "email",
-                "toEmail": "={{ $node[\"Webhook - Iniciar Pago\"].json[\"body\"][\"email\"] }}",
+                "toEmail": "={{ $node[\"MH_Checkout_Webhook\"].json[\"body\"][\"email\"] }}",
                 "subject": "¡Bienvenido a MindHafen Premium!",
-                "html": "<h1>¡Hola {{ $node[\"Webhook - Iniciar Pago\"].json[\"body\"][\"name\"] }}!</h1><p>Tu link de pago ha sido generado con éxito.</p>"
+                "html": "<h1>¡Hola {{ $node[\"MH_Checkout_Webhook\"].json[\"body\"][\"name\"] }}!</h1><p>Tu link de pago ha sido generado con éxito.</p>"
             },
             "id": "4",
-            "name": "Brevo",
+            "name": "MH_Brevo_Email",
             "type": "n8n-nodes-base.sendInBlue",
             "typeVersion": 1,
             "position": [
@@ -82,33 +82,33 @@
         }
     ],
     "connections": {
-        "Webhook - Iniciar Pago": {
+        "MH_Checkout_Webhook": {
             "main": [
                 [
                     {
-                        "node": "MercadoPago API",
+                        "node": "MH_MercadoPago_API",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "MercadoPago API": {
+        "MH_MercadoPago_API": {
             "main": [
                 [
                     {
-                        "node": "Responder URL Pago",
+                        "node": "MH_Respond_URL",
                         "type": "main",
                         "index": 0
                     }
                 ]
             ]
         },
-        "Responder URL Pago": {
+        "MH_Respond_URL": {
             "main": [
                 [
                     {
-                        "node": "Brevo",
+                        "node": "MH_Brevo_Email",
                         "type": "main",
                         "index": 0
                     }
